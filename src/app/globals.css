@@ -1,0 +1,574 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500;1,9..144,600;1,9..144,700&family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Nunito:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* ---- Light theme (public booking site + admin light mode) ---- */
+  --background: #faf8f4;
+  --foreground: #1c1a17;
+  --card: #ffffff;
+  --card-foreground: #1c1a17;
+  --popover: #ffffff;
+  --popover-foreground: #1c1a17;
+
+  --primary: #171512;
+  --primary-foreground: #faf8f4;
+  --secondary: #f1ede4;
+  --secondary-foreground: #1c1a17;
+
+  --muted: #f1ede4;
+  --muted-foreground: #8a8377;
+
+  --accent: #f4ecd8;
+  --accent-foreground: #171512;
+
+  --gold: #b8935a;
+  --gold-light: #d9bc86;
+  --gold-dark: #8f6f3f;
+
+  --destructive: #c0392b;
+  --destructive-foreground: #ffffff;
+
+  --border: #e7e1d4;
+  --input: #e7e1d4;
+  --ring: #b8935a;
+
+  --radius: 1rem;
+}
+
+.dark {
+  --background: #0a0a0b;
+  --foreground: #f4f4f5;
+  --card: #131316;
+  --card-foreground: #f4f4f5;
+  --popover: #16161a;
+  --popover-foreground: #f4f4f5;
+
+  --primary: #c9a961;
+  --primary-foreground: #0a0a0b;
+  --secondary: #1c1c20;
+  --secondary-foreground: #f4f4f5;
+
+  --muted: #1c1c20;
+  --muted-foreground: #8b8b93;
+
+  --accent: #1c1c20;
+  --accent-foreground: #f4f4f5;
+
+  --gold: #c9a961;
+  --gold-light: #e2c68a;
+  --gold-dark: #a3824a;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fef2f2;
+
+  --border: #232326;
+  --input: #232326;
+  --ring: #c9a961;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 3px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Glassmorphism surface used across admin dashboard cards */
+.glass {
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+/* Subtle linen-like noise texture for hero/luxury sections */
+.texture-linen {
+  background-image: radial-gradient(
+      circle at 1px 1px,
+      color-mix(in srgb, var(--foreground) 5%, transparent) 1px,
+      transparent 0
+    );
+  background-size: 22px 22px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--foreground) 20%, transparent);
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+
+  /* Sonner toasts render in their own fixed-position portal outside our
+     print:hidden app wrapper — hide it explicitly so it never prints. */
+  [data-sonner-toaster] {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FLORAL ROOTS & DECORS — marketing site brand tokens
+   Namespaced so they never collide with the admin/gold theme.
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --fr-off-white: #fdfaf4;
+  --fr-cream: #f8f0e0;
+  --fr-cream-dark: #f0e4cc;
+  --fr-ivory: #fdfaf4;
+  --fr-green: #2f6b3f;
+  --fr-green-dark: #1f4e2c;
+  --fr-green-light: #4a8a5a;
+  --fr-green-pale: #e7efe3;
+  --fr-forest: #16301f;
+  --fr-forest-dark: #0d2015;
+  --fr-forest-light: #274a34;
+  --fr-sage: #8a9b74;
+  --fr-sage-dark: #677852;
+  --fr-gold: #c9a15c;
+  --fr-gold-light: #ddc088;
+  --fr-gold-dark: #a67f3d;
+  --fr-gold-pale: #f5ead2;
+  --fr-peach: #e3b9a8;
+  --fr-peach-dark: #d19a85;
+  --fr-blush: #e8c9c2;
+  --fr-blush-dark: #d7aca3;
+  --fr-ink: #1c2b1e;
+  --fr-ink-mid: #35452f;
+  --fr-ink-light: #587a5b;
+  --fr-ink-muted: #97a08f;
+  --fr-border: #e2d3ae;
+  --fr-border-light: #f0e6c9;
+  --font-fr-display: "Playfair Display", serif;
+  --font-fr-sans: "Nunito", sans-serif;
+}
+
+@theme inline {
+  --color-fr-off-white: var(--fr-off-white);
+  --color-fr-cream: var(--fr-cream);
+  --color-fr-cream-dark: var(--fr-cream-dark);
+  --color-fr-ivory: var(--fr-ivory);
+  --color-fr-green: var(--fr-green);
+  --color-fr-green-dark: var(--fr-green-dark);
+  --color-fr-green-light: var(--fr-green-light);
+  --color-fr-green-pale: var(--fr-green-pale);
+  --color-fr-forest: var(--fr-forest);
+  --color-fr-forest-dark: var(--fr-forest-dark);
+  --color-fr-forest-light: var(--fr-forest-light);
+  --color-fr-sage: var(--fr-sage);
+  --color-fr-sage-dark: var(--fr-sage-dark);
+  --color-fr-gold: var(--fr-gold);
+  --color-fr-gold-light: var(--fr-gold-light);
+  --color-fr-gold-dark: var(--fr-gold-dark);
+  --color-fr-gold-pale: var(--fr-gold-pale);
+  --color-fr-peach: var(--fr-peach);
+  --color-fr-peach-dark: var(--fr-peach-dark);
+  --color-fr-blush: var(--fr-blush);
+  --color-fr-blush-dark: var(--fr-blush-dark);
+  --color-fr-ink: var(--fr-ink);
+  --color-fr-ink-mid: var(--fr-ink-mid);
+  --color-fr-ink-light: var(--fr-ink-light);
+  --color-fr-ink-muted: var(--fr-ink-muted);
+  --color-fr-border: var(--fr-border);
+  --color-fr-border-light: var(--fr-border-light);
+  --font-fr-display: var(--font-fr-display);
+  --font-fr-sans: var(--font-fr-sans);
+}
+
+.fr-site {
+  font-family: var(--font-fr-sans);
+  color: var(--fr-ink);
+  background: var(--fr-ivory);
+}
+
+.fr-btn-primary,
+.fr-btn-outline,
+.fr-btn-dark,
+.fr-btn-gold {
+  display: inline-block;
+  font-family: var(--font-fr-sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 13px 28px;
+  border: 1.5px solid var(--fr-forest);
+  transition: all 0.25s ease;
+}
+.fr-btn-primary {
+  background: var(--fr-forest);
+  color: var(--fr-gold-pale);
+}
+.fr-btn-primary:hover {
+  background: var(--fr-forest-dark);
+  border-color: var(--fr-forest-dark);
+  color: var(--fr-gold-light);
+  transform: translateY(-1px);
+}
+.fr-btn-outline {
+  background: transparent;
+  color: var(--fr-forest);
+}
+.fr-btn-outline:hover {
+  background: var(--fr-gold-pale);
+  border-color: var(--fr-gold-dark);
+  color: var(--fr-forest-dark);
+  transform: translateY(-1px);
+}
+.fr-btn-dark {
+  background: var(--fr-ink);
+  color: var(--fr-gold-pale);
+  border-color: var(--fr-ink);
+}
+.fr-btn-dark:hover {
+  background: #253d28;
+  transform: translateY(-1px);
+}
+.fr-btn-gold {
+  background: linear-gradient(135deg, var(--fr-gold-light) 0%, var(--fr-gold) 55%, var(--fr-gold-dark) 100%);
+  color: var(--fr-forest-dark);
+  border-color: var(--fr-gold-dark);
+}
+.fr-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(201, 161, 92, 0.35);
+}
+
+.fr-tagline-bar {
+  display: inline-block;
+  background: var(--fr-forest);
+  color: var(--fr-gold-pale);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  padding: 5px 20px;
+  font-family: var(--font-fr-sans);
+  font-weight: 600;
+}
+
+.fr-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.58rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--fr-gold-dark);
+  font-weight: 700;
+  font-family: var(--font-fr-sans);
+}
+.fr-eyebrow span {
+  width: 28px;
+  height: 1px;
+  background: var(--fr-gold);
+  display: inline-block;
+}
+
+.fr-about-line {
+  position: relative;
+  padding-left: 22px;
+}
+.fr-about-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--fr-gold);
+}
+
+.fr-arch-wrap {
+  position: relative;
+}
+.fr-arch-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 14px;
+  border: 1.5px solid rgba(201, 161, 92, 0.45);
+  z-index: 2;
+  pointer-events: none;
+  transition: inset 0.3s ease;
+}
+.fr-arch-wrap:hover::before {
+  inset: 7px;
+}
+
+.fr-phase-line {
+  position: absolute;
+  top: 28px;
+  left: calc(50% + 28px);
+  right: calc(-50% + 28px);
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--fr-gold) 0%, rgba(201, 161, 92, 0.15) 100%);
+}
+
+.fr-botanical-bg {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23c9a15c' stroke-opacity='0.07' stroke-width='1.2'%3E%3Cpath d='M80 30 Q85 48 80 66 Q75 48 80 30Z'/%3E%3Cpath d='M80 66 L80 120'/%3E%3Cpath d='M80 82 Q96 76 102 82'/%3E%3Cpath d='M80 96 Q64 90 58 96'/%3E%3Ccircle cx='30' cy='30' r='3' stroke-opacity='0.05'/%3E%3Ccircle cx='130' cy='130' r='3' stroke-opacity='0.05'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.fr-nav-link {
+  position: relative;
+}
+.fr-nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  right: 50%;
+  height: 2.5px;
+  background: var(--fr-gold);
+  border-radius: 2px;
+  transition: left 0.25s ease, right 0.25s ease;
+}
+.fr-nav-link:hover::after {
+  left: 12px;
+  right: 12px;
+}
+
+.fr-fade-up {
+  animation: frFadeUp 0.8s ease both;
+}
+.fr-fade-up-1 {
+  animation: frFadeUp 0.8s 0.12s ease both;
+}
+.fr-fade-up-2 {
+  animation: frFadeUp 0.8s 0.24s ease both;
+}
+.fr-fade-up-3 {
+  animation: frFadeUp 0.9s 0.36s ease both;
+}
+@keyframes frFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fr-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.fr-scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.fr-srv-card {
+  cursor: pointer;
+  position: relative;
+}
+.fr-srv-card.selected {
+  outline: 2.5px solid var(--fr-gold);
+  box-shadow: 0 0 0 4px rgba(201, 161, 92, 0.16);
+}
+
+/* Thin botanical corner ornament — subtle luxury detail, not decorative overload */
+.fr-corner-ornament {
+  position: absolute;
+  width: 46px;
+  height: 46px;
+  pointer-events: none;
+  opacity: 0.55;
+}
+.fr-divider-gold {
+  width: 64px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--fr-gold) 0%, transparent 100%);
+  display: block;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FLORAL ROOTS & DECOR — main site (home/about/services/
+   designs/packages/contact) design tokens, ported 1:1 from
+   the standalone frontend's tailwind.config.ts + globals.css.
+   Bare color names (forest, emerald, sage, peach, cream, sand,
+   ink, line) are unique in this app — safe to expose globally.
+   "muted" is the one name shadcn/admin already uses, so its
+   brand value is scoped to .site-shell instead of :root.
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  --forest: #153c22;
+  --forest-deep: #0b2415;
+  --forest-light: #1f5230;
+  --emerald: #0fa958;
+  --emerald-deep: #0b7a40;
+  --emerald-light: #3fc97d;
+  --sage: #a8b87e;
+  --sage-light: #d8e0c2;
+  --sage-deep: #7e8f5c;
+  --peach: #e8b4a0;
+  --peach-deep: #d99b84;
+  --peach-light: #f4ded3;
+  --cream: #fbf6ec;
+  --sand: #f0e9d8;
+  --ink: #16241a;
+  --line: #e4dcc8;
+  --font-body: "Manrope", ui-sans-serif, system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
+  --color-forest-light: var(--forest-light);
+  --color-emerald: var(--emerald);
+  --color-emerald-deep: var(--emerald-deep);
+  --color-emerald-light: var(--emerald-light);
+  --color-sage: var(--sage);
+  --color-sage-light: var(--sage-light);
+  --color-sage-deep: var(--sage-deep);
+  --color-peach: var(--peach);
+  --color-peach-deep: var(--peach-deep);
+  --color-peach-light: var(--peach-light);
+  --color-cream: var(--cream);
+  --color-sand: var(--sand);
+  --color-ink: var(--ink);
+  --color-line: var(--line);
+
+  --font-body: var(--font-body);
+
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --tracking-widest2: 0.28em;
+  --container-8xl: 1600px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Editorial eyebrow label + hairline rule, used throughout the site pages */
+.eyebrow {
+  font-family: var(--font-body);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--emerald);
+}
+.eyebrow--light {
+  color: var(--peach);
+}
+.hr-line {
+  height: 1px;
+  background: var(--line);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.num-marker {
+  font-family: var(--font-display);
+  font-variant-numeric: oldstyle-nums;
+}
+
+/* Scoped to the (site) route group only — keeps the brand's own "muted"
+   value and body-level touches from ever leaking into /admin or /book,
+   which already have their own unrelated --muted (shadcn) token. */
+.site-shell {
+  --muted: #6b7160;
+  background: var(--cream);
+  color: var(--ink);
+  font-feature-settings: "ss01", "ss02";
+}
+.site-shell ::selection {
+  background: var(--emerald);
+  color: #fff;
+}
+.site-shell a:focus-visible,
+.site-shell button:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.site-shell ::-webkit-scrollbar-thumb {
+  background: var(--forest);
+  border-radius: 8px;
+  border: 2px solid var(--cream);
+}

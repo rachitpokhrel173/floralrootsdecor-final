@@ -1,0 +1,54 @@
+.fc {
+  --fc-border-color: var(--border);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--muted);
+  --fc-list-event-hover-bg-color: var(--accent);
+  --fc-today-bg-color: color-mix(in srgb, var(--gold) 8%, transparent);
+  font-family: var(--font-sans);
+}
+
+.fc .fc-toolbar-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--foreground);
+}
+
+.fc .fc-button {
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  color: var(--secondary-foreground);
+  text-transform: capitalize;
+  box-shadow: none;
+  font-weight: 500;
+}
+
+.fc .fc-button:hover {
+  background: var(--accent);
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #fff;
+}
+
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th {
+  border-color: var(--border);
+}
+
+.fc-event {
+  border-radius: 6px;
+  border: none;
+  padding: 1px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
