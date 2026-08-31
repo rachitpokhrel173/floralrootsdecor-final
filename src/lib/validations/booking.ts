@@ -9,6 +9,8 @@ export const EVENT_TYPES = [
   "Baby Shower",
   "Reception",
   "Religious Ceremony",
+  "Bartabanda",
+  "Annaprashan/Pasni",
   "Other",
 ] as const;
 

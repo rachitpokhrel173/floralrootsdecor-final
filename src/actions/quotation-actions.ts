@@ -1,5 +1,6 @@
 "use server";
 
+import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -9,8 +10,47 @@ import {
   type QuotationWithBooking,
   type BookingOption,
 } from "@/lib/data/quotations";
-import { computeQuotationTotals, type QuotationItemInput } from "@/lib/validations/quotation";
+import {
+  computeQuotationTotals,
+  saveQuotationSchema,
+  type SaveQuotationInput,
+} from "@/lib/validations/quotation";
 import type { QuotationStatus } from "@/types/database.types";
+
+const QUOTATION_STATUSES: QuotationStatus[] = [
+  "draft",
+  "sent",
+  "approved",
+  "rejected",
+  "expired",
+];
+
+/**
+ * All quotation writes are staff-only at the DB level (RLS policy
+ * `staff_full_access_quotations`). This mirrors that check in the action so a
+ * non-staff caller gets a clear message instead of a raw RLS error.
+ */
+async function requireStaff(): Promise<
+  { ok: true; userId: string } | { ok: false; error: string }
+> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { ok: false, error: "You need to be signed in." };
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("is_active")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !profile.is_active) {
+    return { ok: false, error: "Your account doesn't have staff access." };
+  }
+  return { ok: true, userId: user.id };
+}
 
 export async function getQuotationsAction(): Promise<QuotationWithBooking[]> {
   return getQuotationsWithBooking();
@@ -24,49 +64,48 @@ export async function getBookingOptionsAction(): Promise<BookingOption[]> {
   return getBookingOptions();
 }
 
-interface SaveQuotationInput {
-  id?: string; // present when editing
-  booking_id: string;
-  items: QuotationItemInput[];
-  discount_type: "flat" | "percent" | null;
-  discount_value: number | null;
-  tax_percent: number | null;
-  notes?: string;
-  valid_until?: string | null;
-}
-
 export async function saveQuotationAction(input: SaveQuotationInput) {
+  const parsed = saveQuotationSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? "Please check the quotation details.",
+    };
+  }
+  const data = parsed.data;
+
+  const guard = await requireStaff();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const { lineItems, subtotal, total } = computeQuotationTotals(
-    input.items,
-    input.discount_type,
-    input.discount_value,
-    input.tax_percent
+    data.items,
+    data.discount_type,
+    data.discount_value,
+    data.tax_percent
   );
 
   const payload = {
-    booking_id: input.booking_id,
+    booking_id: data.booking_id,
     items: lineItems,
     subtotal,
-    discount_type: input.discount_type,
-    discount_value: input.discount_value,
-    tax_percent: input.tax_percent,
+    discount_type: data.discount_type,
+    discount_value: data.discount_value,
+    tax_percent: data.tax_percent,
     total,
-    notes: input.notes ?? null,
-    valid_until: input.valid_until ?? null,
-    created_by: user?.id ?? null,
+    images: data.images ?? [],
+    notes: data.notes ?? null,
+    valid_until: data.valid_until ?? null,
+    created_by: guard.userId,
   };
 
-  if (input.id) {
+  if (data.id) {
     // Editing a draft: bump version so the change history is visible.
     const { data: existing } = await supabase
       .from("quotations")
       .select("version, status")
-      .eq("id", input.id)
+      .eq("id", data.id)
       .single();
 
     const { error } = await supabase
@@ -75,7 +114,7 @@ export async function saveQuotationAction(input: SaveQuotationInput) {
         ...payload,
         version: (existing?.version ?? 1) + 1,
       })
-      .eq("id", input.id);
+      .eq("id", data.id);
 
     if (error) return { success: false, error: error.message };
   } else {
@@ -83,7 +122,7 @@ export async function saveQuotationAction(input: SaveQuotationInput) {
     const { data: booking } = await supabase
       .from("bookings")
       .select("customer_id")
-      .eq("id", input.booking_id)
+      .eq("id", data.booking_id)
       .single();
 
     const { error } = await supabase.from("quotations").insert({
@@ -97,7 +136,7 @@ export async function saveQuotationAction(input: SaveQuotationInput) {
     await supabase
       .from("bookings")
       .update({ quotation_status: "draft" as QuotationStatus })
-      .eq("id", input.booking_id);
+      .eq("id", data.booking_id);
   }
 
   revalidatePath("/admin/quotations");
@@ -110,6 +149,18 @@ export async function updateQuotationStatusAction(
   bookingId: string,
   status: QuotationStatus
 ) {
+  const idCheck = z
+    .object({
+      quotationId: z.string().uuid(),
+      bookingId: z.string().uuid(),
+      status: z.enum(QUOTATION_STATUSES as [QuotationStatus, ...QuotationStatus[]]),
+    })
+    .safeParse({ quotationId, bookingId, status });
+  if (!idCheck.success) return { success: false, error: "Invalid request." };
+
+  const guard = await requireStaff();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const supabase = await createClient();
 
   const updates: { status: QuotationStatus; approved_at?: string } = { status };
@@ -128,16 +179,13 @@ export async function updateQuotationStatusAction(
   }
 
   if (status === "approved") {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
     await supabase.from("notifications").insert({
       user_id: null,
       type: "quotation_approved",
       title: "Quotation approved",
       message: "A quotation was approved by the client.",
       link: `/admin/quotations`,
-      metadata: { quotation_id: quotationId, booking_id: bookingId, actor: user?.id ?? null },
+      metadata: { quotation_id: quotationId, booking_id: bookingId, actor: guard.userId },
     });
   }
 
@@ -147,6 +195,13 @@ export async function updateQuotationStatusAction(
 }
 
 export async function deleteQuotationAction(id: string) {
+  if (!z.string().uuid().safeParse(id).success) {
+    return { success: false, error: "Invalid request." };
+  }
+
+  const guard = await requireStaff();
+  if (!guard.ok) return { success: false, error: guard.error };
+
   const supabase = await createClient();
   const { error } = await supabase.from("quotations").delete().eq("id", id);
   if (error) return { success: false, error: error.message };

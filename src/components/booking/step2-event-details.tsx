@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -17,19 +18,43 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function Step2EventDetails() {
+// `event_type_other` is a UI-only field — it never leaves this step. When the
+// user picks "Other" we capture their free-text answer here and send it through
+// as the real `event_type`.
+type Step2FormValues = Step2Values & { event_type_other?: string };
+
+export function Step2EventDetails({ eventTypes }: { eventTypes?: string[] }) {
   const { data, updateData, nextStep, prevStep } = useBookingFormStore();
+
+  // Options come from the admin-configured `event_types` setting, falling back
+  // to the built-in list. "Other" is always kept last so the free-text escape
+  // hatch is available even if an admin removes it from the list.
+  const options = useMemo(() => {
+    const base = eventTypes && eventTypes.length > 0 ? [...eventTypes] : [...EVENT_TYPES];
+    const withoutOther = base.filter((t) => t !== "Other");
+    return [...withoutOther, "Other"];
+  }, [eventTypes]);
+
+  // If a previously-saved event type isn't one of the options, it was entered
+  // via "Other" — rehydrate the form back into that state.
+  const savedType = data.event_type ?? "";
+  const isPreset = options.includes(savedType);
+  const initialSelection = savedType === "" ? "" : isPreset ? savedType : "Other";
+  const initialOther = savedType !== "" && !isPreset ? savedType : "";
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors },
-  } = useForm<Step2Values>({
+  } = useForm<Step2FormValues>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
-      event_type: data.event_type ?? "",
+      event_type: initialSelection,
+      event_type_other: initialOther,
       event_date: data.event_date ?? "",
       event_time: data.event_time ?? "",
       venue: data.venue ?? "",
@@ -41,9 +66,25 @@ export function Step2EventDetails() {
   });
 
   const eventType = watch("event_type");
+  const isOther = eventType === "Other";
 
-  function onSubmit(values: Step2Values) {
-    updateData(values);
+  function onSubmit(values: Step2FormValues) {
+    const { event_type_other, ...rest } = values;
+    let finalType = values.event_type;
+
+    if (values.event_type === "Other") {
+      const custom = (event_type_other ?? "").trim();
+      if (custom.length < 2) {
+        setError("event_type_other", {
+          type: "manual",
+          message: "Please describe your event type",
+        });
+        return;
+      }
+      finalType = custom;
+    }
+
+    updateData({ ...rest, event_type: finalType });
     nextStep();
   }
 
@@ -67,12 +108,18 @@ export function Step2EventDetails() {
 
       <div className="space-y-2">
         <Label>Event Type</Label>
-        <Select value={eventType} onValueChange={(v) => setValue("event_type", v, { shouldValidate: true })}>
+        <Select
+          value={eventType}
+          onValueChange={(v) => {
+            setValue("event_type", v, { shouldValidate: true });
+            if (v !== "Other") clearErrors("event_type_other");
+          }}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select an event type" />
           </SelectTrigger>
           <SelectContent>
-            {EVENT_TYPES.map((t) => (
+            {options.map((t) => (
               <SelectItem key={t} value={t}>
                 {t}
               </SelectItem>
@@ -81,6 +128,24 @@ export function Step2EventDetails() {
         </Select>
         {errors.event_type && (
           <p className="text-xs text-destructive">{errors.event_type.message}</p>
+        )}
+
+        {isOther && (
+          <div className="space-y-1.5 pt-1">
+            <Label htmlFor="event_type_other" className="text-sm font-normal text-muted-foreground">
+              Please specify your event type
+            </Label>
+            <Input
+              id="event_type_other"
+              placeholder="e.g. Bartabanda, Pasni, Housewarming"
+              {...register("event_type_other", {
+                onChange: () => clearErrors("event_type_other"),
+              })}
+            />
+            {errors.event_type_other && (
+              <p className="text-xs text-destructive">{errors.event_type_other.message}</p>
+            )}
+          </div>
         )}
       </div>
 

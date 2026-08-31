@@ -1,0 +1,11 @@
+node_modules
+.next
+
+.env
+.env.local
+
+# TypeScript incremental build cache
+tsconfig.tsbuildinfo
+
+# Supabase (schema, migrations, seed) kept out of the repo
+supabase/

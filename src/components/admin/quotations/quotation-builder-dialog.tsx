@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,7 @@ import {
   type QuotationFormValues,
 } from "@/lib/validations/quotation";
 import { saveQuotationAction } from "@/actions/quotation-actions";
+import { QuotationImageUploader } from "./quotation-image-uploader";
 import { formatCurrency } from "@/lib/utils";
 import type { BookingOption } from "@/lib/data/quotations";
 import type { ServiceCatalogItem } from "@/lib/validations/settings";
@@ -77,6 +79,7 @@ export function QuotationBuilderDialog({
       discount_type: null,
       discount_value: 0,
       tax_percent: defaultTaxPercent,
+      images: [],
       notes: "",
       valid_until: "",
     },
@@ -98,6 +101,7 @@ export function QuotationBuilderDialog({
         discount_type: (editingQuotation.discount_type as "flat" | "percent" | null) ?? null,
         discount_value: editingQuotation.discount_value ?? 0,
         tax_percent: editingQuotation.tax_percent ?? defaultTaxPercent,
+        images: editingQuotation.images ?? [],
         notes: editingQuotation.notes ?? "",
         valid_until: editingQuotation.valid_until ?? "",
       });
@@ -108,6 +112,7 @@ export function QuotationBuilderDialog({
         discount_type: null,
         discount_value: 0,
         tax_percent: defaultTaxPercent,
+        images: [],
         notes: "",
         valid_until: "",
       });
@@ -138,6 +143,7 @@ export function QuotationBuilderDialog({
         discount_type: values.discount_type,
         discount_value: values.discount_value,
         tax_percent: values.tax_percent,
+        images: values.images ?? [],
         notes: values.notes,
         valid_until: values.valid_until || null,
       });
@@ -157,6 +163,9 @@ export function QuotationBuilderDialog({
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? "Edit Quotation" : "New Quotation"}</DialogTitle>
+          <DialogDescription>
+            Add line items, discounts, and terms — the client-ready document is generated from this.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -210,6 +219,14 @@ export function QuotationBuilderDialog({
                 ))}
               </div>
             )}
+
+            <div className="hidden sm:grid grid-cols-12 gap-2 px-2.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+              <span className="col-span-5">Item</span>
+              <span className="col-span-3">Description</span>
+              <span className="col-span-1 text-right">Qty</span>
+              <span className="col-span-2 text-right">Unit Price</span>
+              <span className="col-span-1" />
+            </div>
 
             <div className="space-y-2">
               {fields.map((field, index) => (
@@ -293,6 +310,23 @@ export function QuotationBuilderDialog({
           <div className="space-y-1.5">
             <Label>Notes</Label>
             <Textarea rows={3} placeholder="Payment terms, inclusions, exclusions…" {...register("notes")} />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label>Reference Images</Label>
+            <p className="text-xs text-muted-foreground">
+              Design mockups, venue photos, or inspiration to attach to this quotation.
+            </p>
+            <Controller
+              control={control}
+              name="images"
+              render={({ field }) => (
+                <QuotationImageUploader
+                  value={field.value ?? []}
+                  onChange={field.onChange}
+                />
+              )}
+            />
           </div>
 
           <div className="rounded-xl border border-border bg-muted/30 p-4 space-y-1.5 text-sm">

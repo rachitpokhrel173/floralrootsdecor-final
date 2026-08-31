@@ -15,11 +15,20 @@ export const quotationFormSchema = z.object({
   discount_type: z.enum(["flat", "percent"]).nullable(),
   discount_value: z.coerce.number().min(0).nullable(),
   tax_percent: z.coerce.number().min(0).max(100).nullable(),
+  images: z.array(z.string().url()).max(12, "Up to 12 images").optional(),
   notes: z.string().max(1000).optional(),
   valid_until: z.string().optional().nullable(),
 });
 
 export type QuotationFormValues = z.infer<typeof quotationFormSchema>;
+
+/** Server-side schema for saveQuotationAction — the form payload plus an
+ *  optional `id` when editing an existing quotation. */
+export const saveQuotationSchema = quotationFormSchema.extend({
+  id: z.string().uuid().optional(),
+});
+
+export type SaveQuotationInput = z.infer<typeof saveQuotationSchema>;
 
 export interface QuotationItemWithTotal {
   name: string;

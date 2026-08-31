@@ -4,6 +4,7 @@ import {
   type CompanyProfileValues,
   type ServiceCatalogItem,
 } from "@/lib/validations/settings";
+import { EVENT_TYPES } from "@/lib/validations/booking";
 
 export interface AllSettings {
   companyProfile: CompanyProfileValues;
@@ -11,17 +12,9 @@ export interface AllSettings {
   serviceCatalog: ServiceCatalogItem[];
 }
 
-const DEFAULT_EVENT_TYPES = [
-  "Wedding",
-  "Engagement",
-  "Birthday",
-  "Corporate Event",
-  "Anniversary",
-  "Baby Shower",
-  "Reception",
-  "Religious Ceremony",
-  "Other",
-];
+// Fallback when the `event_types` settings row hasn't been created yet. Single
+// source of truth is EVENT_TYPES in lib/validations/booking.
+const DEFAULT_EVENT_TYPES: string[] = [...EVENT_TYPES];
 
 const DEFAULT_SERVICE_CATALOG: ServiceCatalogItem[] = [
   { key: "decoration", label: "Decoration" },

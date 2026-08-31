@@ -202,6 +202,7 @@ export interface Database {
           discount_value: number | null;
           tax_percent: number | null;
           total: number;
+          images: string[];
           notes: string | null;
           valid_until: string | null;
           approved_at: string | null;
