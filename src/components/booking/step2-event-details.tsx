@@ -137,7 +137,7 @@ export function Step2EventDetails({ eventTypes }: { eventTypes?: string[] }) {
             </Label>
             <Input
               id="event_type_other"
-              placeholder="e.g. Bartabanda, Pasni, Housewarming"
+              placeholder="e.g. Bratabandha, Pasni, Housewarming"
               {...register("event_type_other", {
                 onChange: () => clearErrors("event_type_other"),
               })}
