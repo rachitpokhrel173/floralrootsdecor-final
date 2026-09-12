@@ -167,18 +167,20 @@ body {
     display: none !important;
   }
 
-  /* The quotation always prints on a single A4 sheet. The Print button measures
-     the document and sets --print-zoom so it shrinks just enough to fit; `zoom`
-     (not `transform`) is used because it affects layout, so Chrome paginates the
-     scaled result. #quotation-print-sheet is locked to the printable area with
-     hidden overflow as a hard backstop. 186mm × 273mm is A4 minus the 12mm
-     @page margins. */
+  /* The quotation always fills a single A4 sheet. The Print button measures
+     the document and sets --print-zoom (shrink long content, enlarge short
+     content) plus --print-width, pre-compensated by that same zoom so the
+     effective printed width always stays at 186mm regardless of direction.
+     `zoom` (not `transform`) is used because it affects layout, so Chrome
+     paginates the scaled result. #quotation-print-sheet is locked to the
+     printable area with hidden overflow as a hard backstop. 186mm × 273mm is
+     A4 minus the 12mm @page margins. */
   #quotation-print-sheet {
     max-height: 273mm;
     overflow: hidden;
   }
   #quotation-print-area {
-    width: 186mm;
+    width: var(--print-width, 186mm);
     box-sizing: border-box;
     zoom: var(--print-zoom, 1);
     -webkit-print-color-adjust: exact;

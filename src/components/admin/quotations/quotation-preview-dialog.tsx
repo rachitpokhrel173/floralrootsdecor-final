@@ -49,21 +49,23 @@ export function QuotationPreviewDialog({
   const [zoomSrc, setZoomSrc] = useState<string | null>(null);
   const printAreaRef = useRef<HTMLDivElement>(null);
 
-  // Shrink the sheet just enough that the whole quotation fits one A4 page —
-  // `zoom` (unlike `transform`) affects layout, so Chrome paginates the scaled
-  // result. Screen spacing is a little looser than print, so this measurement
-  // errs slightly small, which is the safe direction (never clips).
+  // Scale the sheet so the quotation always fills one A4 page — shrinking a
+  // long one down, or enlarging a short one up — instead of leaving a short
+  // quotation stranded at the top with blank space below. `zoom` (unlike
+  // `transform`) affects layout, so Chrome paginates the scaled result. The
+  // width is compensated by the same factor so the effective printed width
+  // always stays at 186mm (never overflows the page when scaling up).
+  // Clamped to [0.5, 1.35] so extremely long/short content stays legible.
   function handlePrint() {
     const el = printAreaRef.current;
     if (el) {
       const PX_PER_MM = 96 / 25.4;
       const printableHeightPx = (297 - 24) * PX_PER_MM; // A4 minus 12mm top+bottom
+      const printableWidthMm = 186; // A4 minus 12mm left+right
       const naturalHeightPx = el.scrollHeight;
-      const zoom =
-        naturalHeightPx > printableHeightPx
-          ? Math.max(0.5, printableHeightPx / naturalHeightPx)
-          : 1;
+      const zoom = Math.min(1.35, Math.max(0.5, printableHeightPx / naturalHeightPx));
       el.style.setProperty("--print-zoom", String(zoom));
+      el.style.setProperty("--print-width", `${printableWidthMm / zoom}mm`);
     }
     window.print();
   }
