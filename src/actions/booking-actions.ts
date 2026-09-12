@@ -81,18 +81,19 @@ export async function submitBooking(
     };
   }
 
-  // Fire-and-forget confirmation email (only runs if RESEND_API_KEY is set)
+  // Fire-and-forget: log to Google Sheet + email admin/client via Apps
+  // Script (only runs if GOOGLE_SHEETS_WEBHOOK_URL is set)
   try {
-    const { sendBookingConfirmationEmail } = await import("@/lib/email/send-booking-confirmation");
-    await sendBookingConfirmationEmail({
-      to: email || undefined,
+    const { notifyGoogleSheetBooking } = await import("@/lib/google-sheets/notify-booking");
+    await notifyGoogleSheetBooking({
       fullName: full_name,
-      bookingCode: booking.booking_code,
-      eventType: event_type,
+      email: email || undefined,
+      venue: venue || undefined,
       eventDate: event_date,
+      eventType: event_type,
     });
   } catch (err) {
-    console.error("submitBooking: confirmation email failed", err);
+    console.error("submitBooking: Google Sheet notification failed", err);
   }
 
   return {
