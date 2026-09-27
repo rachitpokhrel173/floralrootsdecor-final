@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { Moon, Sun, Bell, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,8 +25,15 @@ export function AdminTopbar({ userEmail }: { userEmail?: string }) {
   const [mounted, setMounted] = useState(false);
   const { setCommandPaletteOpen } = useAdminUiStore();
   const { data: notifications, unreadCount } = useNotifications();
+  const [, startLogoutTransition] = useTransition();
 
   useEffect(() => setMounted(true), []);
+
+  const handleLogout = () => {
+    startLogoutTransition(() => {
+      logoutAction();
+    });
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/80 backdrop-blur px-4 sm:px-6">
@@ -121,12 +128,13 @@ export function AdminTopbar({ userEmail }: { userEmail?: string }) {
               <Link href="/admin/settings">Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <form action={logoutAction} className="w-full">
-                <button type="submit" className="w-full text-left">
-                  Log out
-                </button>
-              </form>
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                handleLogout();
+              }}
+            >
+              Log out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
