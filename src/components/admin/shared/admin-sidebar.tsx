@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { ChevronsLeft, Sparkles } from "lucide-react";
+import { ChevronsLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "@/lib/constants/admin-nav";
 import { useAdminUiStore } from "@/stores/admin-ui-store";
@@ -19,8 +20,15 @@ export function AdminSidebar() {
       className="hidden md:flex h-screen sticky top-0 flex-col border-r border-border bg-card"
     >
       <div className="flex items-center gap-2.5 px-4 h-16 border-b border-border shrink-0">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shrink-0">
-          <Sparkles className="h-4 w-4" />
+        <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+          <Image
+            src="/logo.png"
+            alt="Floral Roots & Decor"
+            fill
+            sizes="32px"
+            className="object-cover"
+            priority
+          />
         </div>
         {!sidebarCollapsed && (
           <span className="font-display text-base tracking-tight truncate">Floral R&D CRM</span>

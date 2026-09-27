@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Sparkles, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { loginAction } from "@/actions/auth-actions";
 import { Button } from "@/components/ui/button";
@@ -30,8 +31,15 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm shadow-lg">
         <CardContent className="p-8">
           <div className="flex flex-col items-center text-center mb-8">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground mb-4">
-              <Sparkles className="h-5 w-5" />
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full mb-4">
+              <Image
+                src="/logo.png"
+                alt="Floral Roots & Decor"
+                fill
+                sizes="64px"
+                className="object-cover"
+                priority
+              />
             </div>
             <h1 className="font-display text-2xl">Admin Sign In</h1>
             <p className="text-sm text-muted-foreground mt-1">
