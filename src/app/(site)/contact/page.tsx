@@ -39,31 +39,31 @@ export default function ContactPage() {
                 <ul className="mt-6 space-y-6">
                   {contact.phones.map((phone) => (
                     <li key={phone} className="flex items-start gap-3.5">
-                      <span className="rounded-full bg-emerald/10 p-2.5">
-                        <Phone className="h-4 w-4 text-emerald" />
+                      <span className="rounded-full bg-leaf/10 p-2.5">
+                        <Phone className="h-4 w-4 text-leaf" />
                       </span>
                       <div>
                         <p className="text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-muted">Phone</p>
-                        <a href={`tel:${phone}`} className="text-sm text-ink transition-colors hover:text-emerald">
+                        <a href={`tel:${phone}`} className="text-sm text-ink transition-colors hover:text-leaf">
                           {phone}
                         </a>
                       </div>
                     </li>
                   ))}
                   <li className="flex items-start gap-3.5">
-                    <span className="rounded-full bg-emerald/10 p-2.5">
-                      <Mail className="h-4 w-4 text-emerald" />
+                    <span className="rounded-full bg-leaf/10 p-2.5">
+                      <Mail className="h-4 w-4 text-leaf" />
                     </span>
                     <div>
                       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-muted">Email</p>
-                      <a href={`mailto:${contact.email}`} className="text-sm text-ink transition-colors hover:text-emerald">
+                      <a href={`mailto:${contact.email}`} className="text-sm text-ink transition-colors hover:text-leaf">
                         {contact.email}
                       </a>
                     </div>
                   </li>
                   <li className="flex items-start gap-3.5">
-                    <span className="rounded-full bg-emerald/10 p-2.5">
-                      <MapPin className="h-4 w-4 text-emerald" />
+                    <span className="rounded-full bg-leaf/10 p-2.5">
+                      <MapPin className="h-4 w-4 text-leaf" />
                     </span>
                     <div>
                       <p className="text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-muted">Location</p>
@@ -76,14 +76,14 @@ export default function ContactPage() {
                   <a
                     href={contact.instagram}
                     aria-label="Instagram"
-                    className="rounded-full border border-line p-2.5 text-ink/70 transition-colors hover:border-emerald hover:text-emerald"
+                    className="rounded-full border border-line p-2.5 text-ink/70 transition-colors hover:border-leaf hover:text-leaf"
                   >
                     <Instagram className="h-4 w-4" />
                   </a>
                   <a
                     href={contact.facebook}
                     aria-label="Facebook"
-                    className="rounded-full border border-line p-2.5 text-ink/70 transition-colors hover:border-emerald hover:text-emerald"
+                    className="rounded-full border border-line p-2.5 text-ink/70 transition-colors hover:border-leaf hover:text-leaf"
                   >
                     <Facebook className="h-4 w-4" />
                   </a>

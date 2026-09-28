@@ -14,7 +14,7 @@ export default function HowItWorks() {
           <Eyebrow>The Process</Eyebrow>
           <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
             Booking us is{" "}
-            <span className="italic text-emerald">simple.</span>
+            <span className="italic text-leaf">simple.</span>
           </h2>
         </div>
 
@@ -28,7 +28,7 @@ export default function HowItWorks() {
               transition={{ duration: 0.55, delay: i * 0.08, ease }}
               className="relative"
             >
-              <span className="num-marker text-5xl text-emerald/25">{step.step}</span>
+              <span className="num-marker text-5xl text-leaf/25">{step.step}</span>
               <h3 className="mt-4 font-display text-xl text-ink">{step.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{step.description}</p>
               {i < howItWorks.length - 1 && (

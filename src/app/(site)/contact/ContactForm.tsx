@@ -24,7 +24,7 @@ export default function ContactForm() {
   if (submitted) {
     return (
       <div className="flex flex-col items-center gap-4 rounded-[1.5rem] border border-line bg-white px-8 py-16 text-center">
-        <CheckCircle2 className="h-10 w-10 text-emerald" />
+        <CheckCircle2 className="h-10 w-10 text-leaf" />
         <h3 className="font-display text-2xl text-ink">Thank you.</h3>
         <p className="max-w-sm text-sm leading-relaxed text-muted">
           We&apos;ve received your message and will get back to you shortly.
@@ -45,7 +45,7 @@ export default function ContactForm() {
             name="name"
             type="text"
             required
-            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
             placeholder="Your name"
           />
         </div>
@@ -58,7 +58,7 @@ export default function ContactForm() {
             name="phone"
             type="tel"
             required
-            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
             placeholder="+977 98XXXXXXXX"
           />
         </div>
@@ -72,7 +72,7 @@ export default function ContactForm() {
           id="email"
           name="email"
           type="email"
-          className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+          className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
           placeholder="you@example.com"
         />
       </div>
@@ -85,7 +85,7 @@ export default function ContactForm() {
           <select
             id="eventType"
             name="eventType"
-            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
             defaultValue=""
           >
             <option value="" disabled>
@@ -106,7 +106,7 @@ export default function ContactForm() {
             id="eventDate"
             name="eventDate"
             type="date"
-            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+            className="mt-2 w-full rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
           />
         </div>
       </div>
@@ -119,14 +119,14 @@ export default function ContactForm() {
           id="message"
           name="message"
           rows={5}
-          className="mt-2 w-full resize-none rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-emerald"
+          className="mt-2 w-full resize-none rounded-lg border border-line bg-cream px-4 py-3 text-sm text-ink outline-none transition-colors focus:border-leaf"
           placeholder="Venue, guest count, the feeling you're going for..."
         />
       </div>
 
       <button
         type="submit"
-        className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-4 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-cream transition-all duration-500 ease-editorial hover:bg-emerald sm:w-auto"
+        className="group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-4 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-cream transition-all duration-500 ease-editorial hover:bg-leaf sm:w-auto"
       >
         Send Message
         <Send className="h-4 w-4 transition-transform duration-500 ease-editorial group-hover:translate-x-0.5" />

@@ -21,7 +21,7 @@ export default function OurTeam() {
       <Container className="max-w-2xl text-center">
         <Eyebrow>Our Team</Eyebrow>
         <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
-          The people behind <span className="italic text-emerald">every setup.</span>
+          The people behind <span className="italic text-leaf">every setup.</span>
         </h2>
 
         <AnimatePresence mode="wait">
@@ -33,7 +33,7 @@ export default function OurTeam() {
             transition={{ duration: 0.5, ease }}
             className="mt-12 flex flex-col items-center"
           >
-            <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-emerald/30 bg-forest text-peach sm:h-32 sm:w-32">
+            <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-2 border-leaf/30 bg-forest text-peach sm:h-32 sm:w-32">
               {member.photo ? (
                 <Image
                   src={member.photo}
@@ -47,7 +47,7 @@ export default function OurTeam() {
               )}
             </div>
             <p className="mt-6 font-display text-2xl italic text-ink sm:text-3xl">{member.name}</p>
-            <p className="mt-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-emerald">
+            <p className="mt-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.14em] text-leaf">
               {member.role}
             </p>
           </motion.div>
@@ -59,7 +59,7 @@ export default function OurTeam() {
           </button>
           <div className="flex gap-1.5">
             {ourTeam.map((_, i) => (
-              <button key={i} aria-label={`Go to team member ${i + 1}`} onClick={() => setIndex(i)} className={`h-1.5 rounded-full transition-all duration-300 ${i === index ? "w-6 bg-emerald" : "w-1.5 bg-line"}`} />
+              <button key={i} aria-label={`Go to team member ${i + 1}`} onClick={() => setIndex(i)} className={`h-1.5 rounded-full transition-all duration-300 ${i === index ? "w-6 bg-leaf" : "w-1.5 bg-line"}`} />
             ))}
           </div>
           <button aria-label="Next team member" onClick={next} className="rounded-full border border-line p-2.5 text-ink transition-colors hover:border-forest">

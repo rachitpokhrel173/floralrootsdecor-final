@@ -1,4 +1,5 @@
-import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import type { Quotation, Booking } from "@/types/database.types";
 
 export interface QuotationWithBooking extends Quotation {
@@ -93,3 +94,43 @@ export async function getBookingOptions(): Promise<BookingOption[]> {
 
   return data ?? [];
 }
+
+/**
+ * Public, login-free lookup for the client share page (/q/[token]). Uses the
+ * service-role client because quotations are staff-only under RLS — the
+ * unguessable share token is the only capability checked here, so never call
+ * this with anything but a token taken from the URL. Cached per request so
+ * generateMetadata and the page share one lookup.
+ */
+export const getQuotationByShareToken = cache(async function getQuotationByShareToken(
+  token: string
+): Promise<QuotationWithBooking | null> {
+  if (!/^[a-f0-9]{32}$/.test(token)) return null;
+
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("quotations")
+    .select(
+      "*, booking:bookings(id, booking_code, full_name, phone, email, event_type, event_date)"
+    )
+    .eq("share_token", token)
+    .maybeSingle();
+
+  if (error || !data) {
+    if (error) console.error("getQuotationByShareToken: query failed", error.message);
+    return null;
+  }
+
+  const quotation = data as unknown as QuotationWithBooking;
+
+  const { data: bookingPayments } = await supabase
+    .from("payments")
+    .select("amount")
+    .eq("booking_id", quotation.booking_id);
+
+  const totalReceived = (bookingPayments ?? []).reduce((sum, p) => sum + Number(p.amount), 0);
+
+  // Internal fields the client has no use for.
+  return { ...quotation, created_by: null, totalReceived };
+});

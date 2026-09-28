@@ -35,10 +35,10 @@ export default function Footer() {
               Rooted in quality, flourishing in beauty — premium event decoration across Nepal.
             </p>
             <div className="mt-6 flex gap-3">
-              <a href={contact.instagram} aria-label="Instagram" className="rounded-full border border-cream/20 p-2.5 transition-colors hover:border-emerald hover:text-emerald">
+              <a href={contact.instagram} aria-label="Instagram" className="rounded-full border border-cream/20 p-2.5 transition-colors hover:border-peach hover:text-peach">
                 <Instagram className="h-4 w-4" />
               </a>
-              <a href={contact.facebook} aria-label="Facebook" className="rounded-full border border-cream/20 p-2.5 transition-colors hover:border-emerald hover:text-emerald">
+              <a href={contact.facebook} aria-label="Facebook" className="rounded-full border border-cream/20 p-2.5 transition-colors hover:border-peach hover:text-peach">
                 <Facebook className="h-4 w-4" />
               </a>
             </div>
@@ -49,7 +49,7 @@ export default function Footer() {
             <ul className="mt-5 space-y-3">
               {nav.map((l) => (
                 <li key={l.label}>
-                  <Link href={l.href} className="text-sm text-cream/75 transition-colors hover:text-emerald">
+                  <Link href={l.href} className="text-sm text-cream/75 transition-colors hover:text-peach">
                     {l.label}
                   </Link>
                 </li>
@@ -62,7 +62,7 @@ export default function Footer() {
             <ul className="mt-5 space-y-3">
               {customer.map((l) => (
                 <li key={l.label}>
-                  <Link href={l.href} className="text-sm text-cream/75 transition-colors hover:text-emerald">
+                  <Link href={l.href} className="text-sm text-cream/75 transition-colors hover:text-peach">
                     {l.label}
                   </Link>
                 </li>
@@ -75,16 +75,16 @@ export default function Footer() {
             <ul className="mt-5 space-y-3 text-sm text-cream/75">
               {contact.phones.map((phone) => (
                 <li key={phone} className="flex items-center gap-2.5">
-                  <Phone className="h-3.5 w-3.5 shrink-0 text-emerald" />
-                  <a href={`tel:${phone}`} className="transition-colors hover:text-emerald">{phone}</a>
+                  <Phone className="h-3.5 w-3.5 shrink-0 text-peach" />
+                  <a href={`tel:${phone}`} className="transition-colors hover:text-peach">{phone}</a>
                 </li>
               ))}
               <li className="flex items-center gap-2.5">
-                <Mail className="h-3.5 w-3.5 shrink-0 text-emerald" />
-                <a href={`mailto:${contact.email}`} className="transition-colors hover:text-emerald">{contact.email}</a>
+                <Mail className="h-3.5 w-3.5 shrink-0 text-peach" />
+                <a href={`mailto:${contact.email}`} className="transition-colors hover:text-peach">{contact.email}</a>
               </li>
               <li className="flex items-start gap-2.5">
-                <MapPin className="h-3.5 w-3.5 shrink-0 translate-y-0.5 text-emerald" />
+                <MapPin className="h-3.5 w-3.5 shrink-0 translate-y-0.5 text-peach" />
                 <span>{contact.location}</span>
               </li>
             </ul>
@@ -105,7 +105,7 @@ export default function Footer() {
               href={builtBy.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-cream/60 underline decoration-cream/20 underline-offset-2 transition-colors hover:text-emerald hover:decoration-emerald"
+              className="text-cream/60 underline decoration-cream/20 underline-offset-2 transition-colors hover:text-peach hover:decoration-peach"
             >
               {builtBy.name}
             </a>

@@ -17,7 +17,7 @@ export default function Services() {
           <Eyebrow>What We Do</Eyebrow>
           <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
             Services built for the{" "}
-            <span className="italic text-emerald">full celebration.</span>
+            <span className="italic text-leaf">full celebration.</span>
           </h2>
         </div>
 
@@ -34,7 +34,7 @@ export default function Services() {
               >
                 <span
                   className={`num-marker text-lg transition-colors duration-300 ${
-                    active === i ? "text-emerald" : "text-muted/50"
+                    active === i ? "text-leaf" : "text-muted/50"
                   }`}
                 >
                   {s.index}

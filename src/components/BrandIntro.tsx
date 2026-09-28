@@ -46,7 +46,7 @@ export default function BrandIntro() {
             <Eyebrow>Who We Are</Eyebrow>
             <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl md:text-[3.4rem]">
               Every celebration deserves{" "}
-              <span className="italic text-emerald">its own beautiful setting.</span>
+              <span className="italic text-leaf">its own beautiful setting.</span>
             </h2>
             <p className="mt-7 max-w-xl text-[1.05rem] leading-relaxed text-muted">
               Floral Roots &amp; Decor is an event decoration studio built around one idea:

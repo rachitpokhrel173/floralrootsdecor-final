@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import MobileStickyCTA from "@/components/MobileStickyCTA";
 import PageHero from "@/components/PageHero";
 import WhyUs from "@/components/WhyUs";
+import OurTeam from "@/components/OurTeam";
 import BookingCTA from "@/components/BookingCTA";
 import { Container, Eyebrow } from "@/components/ui";
 
@@ -34,7 +35,7 @@ export default function AboutPage() {
                 <Eyebrow>What We Believe</Eyebrow>
                 <h2 className="mt-5 font-display text-3xl font-light leading-[1.15] text-ink sm:text-4xl">
                   Every event tells a story —{" "}
-                  <span className="italic text-emerald">we design the setting for it.</span>
+                  <span className="italic text-leaf">we design the setting for it.</span>
                 </h2>
                 <p className="mt-6 text-[1.02rem] leading-relaxed text-muted">
                   From an intimate Bratabandha to a full wedding production, we treat every booking
@@ -70,7 +71,7 @@ export default function AboutPage() {
               <Eyebrow>Our Approach</Eyebrow>
               <h2 className="mt-5 font-display text-3xl font-light leading-[1.15] text-ink sm:text-4xl">
                 From first conversation to{" "}
-                <span className="italic text-emerald">final walkthrough.</span>
+                <span className="italic text-leaf">final walkthrough.</span>
               </h2>
               <p className="mt-6 text-[1.02rem] leading-relaxed text-muted">
                 We start by listening — your venue, your rituals, your guest count, the feeling you
@@ -81,6 +82,7 @@ export default function AboutPage() {
           </Container>
         </section>
 
+        <OurTeam />
         <BookingCTA />
       </main>
       <Footer />

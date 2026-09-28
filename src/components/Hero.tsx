@@ -16,6 +16,7 @@ export default function Hero() {
         alt="Signature event decoration by Floral Roots & Decor"
         fill
         priority
+        sizes="100vw"
         className="object-cover"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-forest via-forest/55 to-forest/20" />

@@ -11,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   } = await supabase.auth.getUser();
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background print:hidden">
       <AdminSidebar />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminTopbar userEmail={user?.email} />

@@ -39,7 +39,7 @@ export default function DesignsClient() {
                 "rounded-full border px-5 py-2.5 text-[0.8rem] font-semibold uppercase tracking-[0.08em] transition-all duration-300",
                 activeSlug === cat.slug
                   ? "border-forest bg-forest text-cream"
-                  : "border-line text-ink/70 hover:border-emerald/50 hover:text-emerald"
+                  : "border-line text-ink/70 hover:border-leaf/50 hover:text-leaf"
               )}
             >
               {cat.label}
@@ -67,7 +67,7 @@ export default function DesignsClient() {
             </span>
           )}
           {active.isReal && (
-            <span className="flex items-center gap-1.5 rounded-full bg-emerald/10 px-4 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-emerald">
+            <span className="flex items-center gap-1.5 rounded-full bg-leaf/10 px-4 py-1.5 text-[0.68rem] font-semibold uppercase tracking-[0.1em] text-leaf">
               <Camera className="h-3 w-3" /> Real photography
             </span>
           )}

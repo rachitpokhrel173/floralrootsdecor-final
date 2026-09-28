@@ -27,7 +27,7 @@ export default function MobileStickyCTA() {
         >
           <Link
             href={routes.book}
-            className="flex w-full items-center justify-center rounded-full bg-forest py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-emerald"
+            className="flex w-full items-center justify-center rounded-full bg-forest py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-cream transition-colors hover:bg-leaf"
           >
             Book Your Event
           </Link>

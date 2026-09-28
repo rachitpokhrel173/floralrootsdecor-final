@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { QueryProvider } from "@/components/layout/query-provider";
@@ -6,6 +7,20 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const SITE_URL = "https://www.floralrootsdecor.com.np";
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz"],
+  variable: "--font-fraunces",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -33,13 +48,13 @@ export const metadata: Metadata = {
     siteName: "Floral Roots & Decor",
     locale: "en_NP",
     type: "website",
-    images: [{ url: "/images/hero-main.svg", width: 1600, height: 1000, alt: "Floral Roots & Decor — event decoration" }],
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Floral Roots & Decor — event decoration" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Floral Roots & Decor | Premium Event Decoration in Nepal",
     description: "Rooted in quality, flourishing in beauty — event decoration across Nepal.",
-    images: ["/images/hero-main.svg"],
+    images: ["/og-image.jpg"],
   },
   icons: {
     icon: "/logo.png",
@@ -77,7 +92,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       <body className="antialiased font-sans">
         <script
           type="application/ld+json"
@@ -91,7 +106,7 @@ export default function RootLayout({
         >
           <QueryProvider>
             <TooltipProvider delayDuration={200}>
-              <div className="print:hidden">{children}</div>
+              {children}
               <Toaster position="top-right" richColors closeButton />
             </TooltipProvider>
           </QueryProvider>

@@ -31,7 +31,7 @@ export default function ServicesPage() {
               {allServices.map((group, gi) => (
                 <div key={group.category}>
                   <div className="mb-8 flex items-end gap-4 border-b border-line pb-5">
-                    <span className="num-marker font-display text-2xl text-emerald">
+                    <span className="num-marker font-display text-2xl text-leaf">
                       {String(gi + 1).padStart(2, "0")}
                     </span>
                     <h2 className="font-display text-2xl font-light text-ink sm:text-3xl">
@@ -41,7 +41,7 @@ export default function ServicesPage() {
                   <div className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
                     {group.items.map((item) => (
                       <div key={item.name} className="group">
-                        <h3 className="font-display text-lg text-ink transition-colors group-hover:text-emerald">
+                        <h3 className="font-display text-lg text-ink transition-colors group-hover:text-leaf">
                           {item.name}
                         </h3>
                         <p className="mt-2 text-sm leading-relaxed text-muted">{item.description}</p>

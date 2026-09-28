@@ -63,6 +63,7 @@ export function QuotationBuilderDialog({
 }: QuotationBuilderDialogProps) {
   const [isPending, startTransition] = useTransition();
   const isEditing = !!editingQuotation;
+  const wasApproved = editingQuotation?.status === "approved";
 
   const {
     control,
@@ -152,7 +153,11 @@ export function QuotationBuilderDialog({
         toast.error("Couldn't save quotation", { description: res.error });
         return;
       }
-      toast.success(isEditing ? "Quotation updated" : "Quotation created");
+      toast.success(isEditing ? "Quotation updated" : "Quotation created", {
+        description: wasApproved
+          ? "It was approved before — it's now back to Sent for the client to re-accept."
+          : undefined,
+      });
       onOpenChange(false);
       onSaved?.();
     });
@@ -169,6 +174,16 @@ export function QuotationBuilderDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {wasApproved && (
+            <p className="rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
+              This quotation is already approved
+              {editingQuotation?.approved_by_signature
+                ? ` (accepted by ${editingQuotation.approved_by_signature})`
+                : ""}
+              . Saving changes resets it to <strong>Sent</strong> so the client can re-accept the new
+              revision.
+            </p>
+          )}
           <div className="space-y-1.5">
             <Label>Booking</Label>
             <Controller
@@ -259,6 +274,14 @@ export function QuotationBuilderDialog({
                       <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
+                  {errors.items?.[index] && (
+                    <p className="col-span-12 text-xs text-destructive">
+                      {errors.items[index]?.name?.message ??
+                        errors.items[index]?.qty?.message ??
+                        errors.items[index]?.unit_price?.message ??
+                        errors.items[index]?.description?.message}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

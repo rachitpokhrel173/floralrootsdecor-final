@@ -42,7 +42,7 @@ export function BookingSteps({ eventTypes }: { eventTypes: string[] }) {
           Prefer to talk it through first?{" "}
           <a
             href={`tel:${contact.phones[0]}`}
-            className="inline-flex items-center gap-1.5 font-semibold text-forest hover:text-emerald"
+            className="inline-flex items-center gap-1.5 font-semibold text-forest hover:text-leaf"
           >
             <Phone className="h-3.5 w-3.5" /> Call us
           </a>{" "}
@@ -51,7 +51,7 @@ export function BookingSteps({ eventTypes }: { eventTypes: string[] }) {
             href={`https://wa.me/${contact.phones[0].replace(/[^0-9]/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 font-semibold text-forest hover:text-emerald"
+            className="inline-flex items-center gap-1.5 font-semibold text-forest hover:text-leaf"
           >
             <MessageCircle className="h-3.5 w-3.5" /> WhatsApp us
           </a>

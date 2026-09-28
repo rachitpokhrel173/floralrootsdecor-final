@@ -1,7 +1,6 @@
 
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { Container, Eyebrow } from "./ui";
 import { testimonials } from "@/lib/site-data";
@@ -35,8 +34,11 @@ export default function Testimonials() {
               &ldquo;{t.quote}&rdquo;
             </p>
             <div className="mt-8 flex items-center justify-center gap-3">
-              <div className="relative h-12 w-12 overflow-hidden rounded-full">
-                <Image src={t.image} alt={t.name} fill className="object-cover" sizes="48px" />
+              <div
+                aria-hidden
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-forest font-display text-lg italic text-peach"
+              >
+                {t.name.charAt(0)}
               </div>
               <div className="text-left">
                 <p className="text-sm font-semibold text-ink">{t.name}</p>
@@ -61,7 +63,7 @@ export default function Testimonials() {
                 aria-label={`Go to testimonial ${i + 1}`}
                 onClick={() => setIndex(i)}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === index ? "w-6 bg-emerald" : "w-1.5 bg-line"
+                  i === index ? "w-6 bg-leaf" : "w-1.5 bg-line"
                 }`}
               />
             ))}

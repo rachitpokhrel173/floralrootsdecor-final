@@ -28,10 +28,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // The open mobile menu sits on a cream panel, so the header needs the
+  // solid, dark-text treatment too — even at the top of the page.
+  const solid = scrolled || open;
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-editorial ${
-        scrolled ? "bg-cream/90 backdrop-blur-md shadow-[0_1px_0_rgba(22,36,26,0.06)]" : "bg-transparent"
+        open
+          ? "bg-cream"
+          : scrolled
+            ? "bg-cream/90 backdrop-blur-md shadow-[0_1px_0_rgba(22,36,26,0.06)]"
+            : "bg-transparent"
       }`}
     >
       <Container>
@@ -47,7 +55,7 @@ export default function Navbar() {
             />
             <span
               className={`font-display text-lg tracking-tight md:text-xl ${
-                scrolled ? "text-forest" : "text-cream"
+                solid ? "text-forest" : "text-cream"
               }`}
             >
               Floral Roots <span className="italic font-normal">&amp; Decor</span>
@@ -60,7 +68,7 @@ export default function Navbar() {
                 key={l.label}
                 href={l.href}
                 className={`text-[0.78rem] font-semibold uppercase tracking-[0.12em] transition-colors duration-300 ${
-                  scrolled ? "text-ink/70 hover:text-emerald" : "text-cream/85 hover:text-cream"
+                  scrolled ? "text-ink/70 hover:text-leaf" : "text-cream/85 hover:text-cream"
                 }`}
               >
                 {l.label}
@@ -73,9 +81,10 @@ export default function Navbar() {
           </div>
 
           <button
-            aria-label="Toggle menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
             onClick={() => setOpen((o) => !o)}
-            className={`lg:hidden ${scrolled ? "text-forest" : "text-cream"}`}
+            className={`lg:hidden ${solid ? "text-forest" : "text-cream"}`}
           >
             {open ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
           </button>

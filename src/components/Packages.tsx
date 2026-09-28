@@ -18,7 +18,7 @@ export default function Packages() {
           <Eyebrow>Choose Your Experience</Eyebrow>
           <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
             Packages for every{" "}
-            <span className="italic text-emerald">kind of occasion.</span>
+            <span className="italic text-leaf">kind of occasion.</span>
           </h2>
           <p className="mt-5 text-[1.02rem] leading-relaxed text-muted">
             Starting prices shown as a guide — every package is refined around your venue, guest
@@ -37,8 +37,8 @@ export default function Packages() {
               className={clsx(
                 "group flex flex-col overflow-hidden rounded-[1.5rem] border transition-all duration-500",
                 p.featured
-                  ? "border-emerald bg-forest text-cream shadow-[0_20px_50px_rgba(21,60,34,0.25)]"
-                  : "border-line bg-white text-ink hover:border-emerald/40 hover:shadow-[0_16px_40px_rgba(22,36,26,0.08)]"
+                  ? "border-leaf bg-forest text-cream shadow-[0_20px_50px_rgba(21,60,34,0.25)]"
+                  : "border-line bg-white text-ink hover:border-leaf/40 hover:shadow-[0_16px_40px_rgba(22,36,26,0.08)]"
               )}
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden">
@@ -62,10 +62,10 @@ export default function Packages() {
                   {p.suitedFor}
                 </p>
 
-                <p className={clsx("mt-5 font-display text-xl", p.featured ? "text-peach" : "text-emerald")}>
+                <p className={clsx("mt-5 font-display text-xl", p.featured ? "text-peach" : "text-leaf")}>
                   {p.startingPrice}
                   {p.startingPrice !== "On request" && (
-                    <span className={clsx("ml-1 font-body text-[0.65rem] font-medium", p.featured ? "text-cream/50" : "text-muted")}>
+                    <span className={clsx("ml-1 font-sans text-[0.65rem] font-medium", p.featured ? "text-cream/50" : "text-muted")}>
                       starting
                     </span>
                   )}
@@ -74,7 +74,7 @@ export default function Packages() {
                 <ul className="mt-5 flex-1 space-y-2.5">
                   {p.inclusions.map((inc) => (
                     <li key={inc} className="flex items-start gap-2 text-[0.85rem] leading-snug">
-                      <Check className={clsx("mt-0.5 h-3.5 w-3.5 shrink-0", p.featured ? "text-peach" : "text-emerald")} />
+                      <Check className={clsx("mt-0.5 h-3.5 w-3.5 shrink-0", p.featured ? "text-peach" : "text-leaf")} />
                       <span className={p.featured ? "text-cream/85" : "text-ink/80"}>{inc}</span>
                     </li>
                   ))}
@@ -86,7 +86,7 @@ export default function Packages() {
                   </Link>
                   <Link
                     href={`${routes.book}?package=${p.tier.toLowerCase()}`}
-                    className={clsx("inline-flex items-center gap-1", p.featured ? "text-peach" : "text-emerald")}
+                    className={clsx("inline-flex items-center gap-1", p.featured ? "text-peach" : "text-leaf")}
                   >
                     Book <ArrowUpRight className="h-3.5 w-3.5" />
                   </Link>

@@ -31,7 +31,7 @@ export function ButtonPrimary({
       className={clsx(
         "group inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3.5",
         "text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-cream",
-        "transition-all duration-500 ease-editorial hover:bg-emerald hover:shadow-[0_8px_30px_rgba(15,169,88,0.35)]",
+        "transition-all duration-500 ease-editorial hover:bg-leaf hover:shadow-[0_8px_30px_rgba(46,107,68,0.3)]",
         className
       )}
     >

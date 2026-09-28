@@ -54,11 +54,8 @@ export const eventCategories = [
 ] as const;
 
 /**
- * Design categories for the /designs page.
- * "mandap", "stage", "entrance", "engagement" and "wedding" are now
- * populated with real photography. "car-decoration", "reception-table"
- * and "birthday" stay as placeholder brand-toned art until real photos
- * are supplied for those categories.
+ * Design categories for the /designs page. Every category shows real
+ * photography — add a category here only once real photos exist for it.
  */
 export const mandapPhotos = Array.from({ length: 19 }, (_, i) => {
   const n = String(i + 1).padStart(2, "0");
@@ -223,17 +220,6 @@ export const designCategories: DesignCategory[] = [
     isReal: true,
     photos: nameBoardPhotos,
   },
-  {
-    slug: "birthday",
-    label: "Birthday & Parties",
-    cover: "/images/collection-6.svg",
-    description: "Playful, personal decor for birthdays, anniversaries and private parties.",
-    isReal: false,
-    photos: [
-      { id: "1", image: "/images/collection-6.svg", alt: "Birthday decoration placeholder design 1" },
-      { id: "2", image: "/images/event-3.svg", alt: "Birthday decoration placeholder design 2" },
-    ],
-  },
 ];
 
 export const collectionItems = [
@@ -369,36 +355,24 @@ export const whyUs = [
  * Add exact venue/city per photo once you're ready to share it — until
  * then "Nepal" is used as a truthful, non-specific location.
  */
-export const realEvents = [
-  { id: 1, name: "Abhiyan & Shreya's Reception", type: "Wedding", location: "Nepal", image: "/images/name-board/name-board-04.jpg" },
-  { id: 2, name: "Traditional Mehndi Ceremony", type: "Mehndi", location: "Nepal", image: "/images/mehndi/mehndi-01.jpg" },
-  { id: 3, name: "Bridal Car Styling", type: "Wedding", location: "Nepal", image: "/images/car-decoration/car-08.jpg" },
-  { id: 4, name: "Poolside Engagement Setup", type: "Engagement", location: "Nepal", image: "/images/engagement-real/engagement-real-01.jpg" },
-  { id: 5, name: "Reception Table Styling", type: "Reception", location: "Nepal", image: "/images/reception/reception-02.jpg" },
-  { id: 6, name: "Temple Bratabandha Ceremony", type: "Traditional", location: "Nepal", image: "/images/mandap/mandap-09.jpg" },
-] as const;
-
 export const testimonials = [
   {
     name: "Amit & Urmila",
     event: "Wedding, Banepa, Kavrepalanchok",
     quote:
       "From the entrance décor to the stage backdrop, everything was breathtaking. Professional, punctual, and so easy to work with. Highly recommend!",
-    image: "/images/testimonial-1.svg",
   },
   {
     name: "Prasesh & Spohiya",
     event: "Wedding, Kavrepalanchok",
     quote:
       "The flowers were fresh, fragrant, and arranged with so much love. It felt like they truly understood our vision. Thank you for the magic!",
-    image: "/images/testimonial-2.svg",
   },
   {
     name: "Suresh Bajracharya, HR Manager",
     event: "Corporate Event, Kathmandu",
     quote:
       "We hired them for our company's annual event in Kathmandu, and the decor was outstanding. Elegant stage setup, fresh floral arrangements, and everything delivered right on schedule. Highly professional team!",
-    image: "/images/testimonial-3.svg",
   },
 ] as const;
 

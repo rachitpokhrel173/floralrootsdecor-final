@@ -108,15 +108,31 @@ export async function saveQuotationAction(input: SaveQuotationInput) {
       .eq("id", data.id)
       .single();
 
+    // The client accepted the previous revision, not this one — changing the
+    // content voids that acceptance, so send it back for re-approval.
+    const voidsApproval = existing?.status === "approved";
+
     const { error } = await supabase
       .from("quotations")
       .update({
         ...payload,
         version: (existing?.version ?? 1) + 1,
+        ...(voidsApproval && {
+          status: "sent" as QuotationStatus,
+          approved_at: null,
+          approved_by_signature: null,
+        }),
       })
       .eq("id", data.id);
 
     if (error) return { success: false, error: error.message };
+
+    if (voidsApproval) {
+      await supabase
+        .from("bookings")
+        .update({ quotation_status: "sent" as QuotationStatus })
+        .eq("id", data.booking_id);
+    }
   } else {
     // Look up the booking's customer so the quotation is linked correctly.
     const { data: booking } = await supabase
@@ -208,4 +224,59 @@ export async function deleteQuotationAction(id: string) {
 
   revalidatePath("/admin/quotations");
   return { success: true };
+}
+
+/**
+ * Called when staff share a quotation with the client (WhatsApp / copy link).
+ * A draft that leaves the building is, by definition, sent — so promote it,
+ * which also moves the booking to `quotation_sent`. Returns the share token.
+ */
+export async function markQuotationSharedAction(quotationId: string) {
+  if (!z.string().uuid().safeParse(quotationId).success) {
+    return { success: false as const, error: "Invalid request." };
+  }
+
+  const guard = await requireStaff();
+  if (!guard.ok) return { success: false as const, error: guard.error };
+
+  const supabase = await createClient();
+  const { data: quotation, error } = await supabase
+    .from("quotations")
+    .select("id, booking_id, status, share_token")
+    .eq("id", quotationId)
+    .single();
+
+  if (error || !quotation) {
+    return { success: false as const, error: error?.message ?? "Quotation not found." };
+  }
+
+  if (quotation.status === "draft") {
+    const res = await updateQuotationStatusAction(quotation.id, quotation.booking_id, "sent");
+    if (!res.success) return { success: false as const, error: res.error };
+  }
+
+  return { success: true as const, token: quotation.share_token };
+}
+
+/** Rotate the share token so any previously shared link stops working. */
+export async function regenerateQuotationShareLinkAction(quotationId: string) {
+  if (!z.string().uuid().safeParse(quotationId).success) {
+    return { success: false as const, error: "Invalid request." };
+  }
+
+  const guard = await requireStaff();
+  if (!guard.ok) return { success: false as const, error: guard.error };
+
+  const token = crypto.randomUUID().replace(/-/g, "");
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("quotations")
+    .update({ share_token: token })
+    .eq("id", quotationId);
+
+  if (error) return { success: false as const, error: error.message };
+
+  revalidatePath("/admin/quotations");
+  return { success: true as const, token };
 }

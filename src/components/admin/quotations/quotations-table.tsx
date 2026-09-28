@@ -14,6 +14,8 @@ import {
   Plus,
   Search,
   Wallet,
+  MessageCircle,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +37,7 @@ import {
 import { QuotationStatusBadge } from "./quotation-status-badge";
 import { QuotationBuilderDialog } from "./quotation-builder-dialog";
 import { QuotationPreviewDialog } from "./quotation-preview-dialog";
+import { useQuotationShareActions } from "./quotation-share-menu";
 import { RecordPaymentDialog } from "@/components/admin/payments/record-payment-dialog";
 import { useQuotations } from "@/hooks/use-quotations";
 import { updateQuotationStatusAction, deleteQuotationAction } from "@/actions/quotation-actions";
@@ -69,9 +72,16 @@ export function QuotationsTable({
   const [statusFilter, setStatusFilter] = useState<QuotationStatus | "all">("all");
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingQuotation, setEditingQuotation] = useState<QuotationWithBooking | null>(null);
-  const [previewQuotation, setPreviewQuotation] = useState<QuotationWithBooking | null>(null);
+  // Store the id, not the row, so the open preview reflects live updates
+  // (payments recorded, status changes, link resets) instead of a snapshot.
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const previewQuotation = useMemo(
+    () => quotations?.find((q) => q.id === previewId) ?? null,
+    [quotations, previewId]
+  );
   const [paymentQuotation, setPaymentQuotation] = useState<QuotationWithBooking | null>(null);
   const [, startTransition] = useTransition();
+  const { shareWhatsApp, copyLink } = useQuotationShareActions(companyProfile.name, refetch);
 
   const filtered = useMemo(() => {
     const list = quotations ?? [];
@@ -95,6 +105,7 @@ export function QuotationsTable({
         return;
       }
       toast.success(`Quotation marked as ${status}`);
+      refetch();
     });
   }
 
@@ -107,6 +118,7 @@ export function QuotationsTable({
         return;
       }
       toast.success("Quotation deleted");
+      refetch();
     });
   }
 
@@ -183,7 +195,7 @@ export function QuotationsTable({
                 <tr
                   key={q.id}
                   className="border-t border-border hover:bg-muted/30 transition-colors cursor-pointer"
-                  onClick={() => setPreviewQuotation(q)}
+                  onClick={() => setPreviewId(q.id)}
                 >
                   <td className="px-4 py-3 font-medium whitespace-nowrap">{q.quotation_number}</td>
                   <td className="px-4 py-3">
@@ -214,6 +226,11 @@ export function QuotationsTable({
                   </td>
                   <td className="px-4 py-3">
                     <QuotationStatusBadge status={q.status} />
+                    {q.status === "approved" && q.approved_by_signature && (
+                      <p className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400">
+                        Accepted online by {q.approved_by_signature}
+                      </p>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
                     {formatDate(q.created_at)}
@@ -226,8 +243,14 @@ export function QuotationsTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setPreviewQuotation(q)}>
+                        <DropdownMenuItem onClick={() => setPreviewId(q.id)}>
                           <Eye className="h-4 w-4 mr-2" /> View / Print
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => shareWhatsApp(q)}>
+                          <MessageCircle className="h-4 w-4 mr-2 text-[#25D366]" /> Send on WhatsApp
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => copyLink(q)}>
+                          <Link2 className="h-4 w-4 mr-2" /> Copy client link
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           onClick={() => {
@@ -285,10 +308,11 @@ export function QuotationsTable({
 
       <QuotationPreviewDialog
         open={!!previewQuotation}
-        onOpenChange={(o) => !o && setPreviewQuotation(null)}
+        onOpenChange={(o) => !o && setPreviewId(null)}
         quotation={previewQuotation}
         companyProfile={companyProfile}
         onPaymentRecorded={refetch}
+        onChanged={refetch}
       />
 
       {paymentQuotation && (

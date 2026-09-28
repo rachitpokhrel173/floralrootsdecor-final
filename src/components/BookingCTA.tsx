@@ -11,7 +11,7 @@ export default function BookingCTA() {
     <section className="relative overflow-hidden bg-forest py-28 text-cream md:py-36">
       <div
         className="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full opacity-30 blur-3xl"
-        style={{ background: "radial-gradient(circle, #0FA958 0%, transparent 70%)" }}
+        style={{ background: "radial-gradient(circle, #A8B87E 0%, transparent 70%)" }}
       />
       <div
         className="pointer-events-none absolute -bottom-40 -left-40 h-[32rem] w-[32rem] rounded-full opacity-20 blur-3xl"

@@ -207,6 +207,7 @@ export interface Database {
           valid_until: string | null;
           approved_at: string | null;
           approved_by_signature: string | null;
+          share_token: string;
           created_by: string | null;
           created_at: string;
           updated_at: string;

@@ -22,7 +22,7 @@ export default function DesignCollection() {
           <div className="max-w-xl">
             <Eyebrow>Our Portfolio</Eyebrow>
             <h2 className="mt-5 font-display text-4xl font-light leading-[1.08] text-ink sm:text-5xl">
-              The Design <span className="italic text-emerald">Collection.</span>
+              The Design <span className="italic text-leaf">Collection.</span>
             </h2>
           </div>
           <p className="max-w-sm text-sm leading-relaxed text-muted">
