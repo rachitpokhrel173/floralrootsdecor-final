@@ -9,12 +9,18 @@ export function quotationSharePath(token: string) {
 /**
  * Absolute share URL. Uses NEXT_PUBLIC_APP_URL (the official domain) so links
  * sent to clients are always on it — even if staff opened the admin through a
- * *.vercel.app preview URL. Falls back to the current browser origin.
+ * *.vercel.app preview URL. Falls back to the current browser origin, and a
+ * localhost value is ignored when the admin is running on a real domain (a
+ * dev .env copied into the host would otherwise send clients dead links).
  */
 export function quotationShareUrl(token: string) {
   const configured = (process.env.NEXT_PUBLIC_APP_URL ?? "").trim().replace(/\/$/, "");
-  const origin =
-    configured || (typeof window !== "undefined" ? window.location.origin : "");
+  const browserOrigin = typeof window !== "undefined" ? window.location.origin : "";
+
+  const isLocal = (url: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(url);
+  const useConfigured = configured && !(isLocal(configured) && browserOrigin && !isLocal(browserOrigin));
+
+  const origin = useConfigured ? configured : browserOrigin || configured;
   return `${origin}${quotationSharePath(token)}`;
 }
 
