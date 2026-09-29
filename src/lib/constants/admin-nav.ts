@@ -13,6 +13,7 @@ import {
   BarChart3,
   Bell,
   Settings,
+  Inbox,
 } from "lucide-react";
 
 export interface AdminNavItem {
@@ -24,6 +25,7 @@ export interface AdminNavItem {
 export const ADMIN_NAV: AdminNavItem[] = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Bookings", href: "/admin/bookings", icon: Table2 },
+  { label: "Inquiries", href: "/admin/inquiries", icon: Inbox },
   { label: "Calendar", href: "/admin/calendar", icon: CalendarRange },
   { label: "Pipeline", href: "/admin/pipeline", icon: KanbanSquare },
   { label: "Customers", href: "/admin/customers", icon: Users },

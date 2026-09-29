@@ -7,6 +7,7 @@ import { LayoutDashboard, Table2, CalendarRange, FileText, LayoutGrid, LogOut } 
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { ADMIN_NAV } from "@/lib/constants/admin-nav";
 import { useNotifications } from "@/hooks/use-notifications";
+import { useInquiries } from "@/hooks/use-inquiries";
 import { logoutAction } from "@/actions/auth-actions";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +22,7 @@ export function AdminMobileNav() {
   const pathname = usePathname();
   const [moreOpen, setMoreOpen] = useState(false);
   const { unreadCount } = useNotifications();
+  const { newCount: newInquiries } = useInquiries();
   const [, startLogoutTransition] = useTransition();
 
   // Close the sheet after navigating to a page from it
@@ -58,9 +60,9 @@ export function AdminMobileNav() {
         >
           <LayoutGrid className="h-5 w-5" />
           More
-          {unreadCount > 0 && (
+          {unreadCount + newInquiries > 0 && (
             <span className="absolute top-0.5 right-[calc(50%-18px)] flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[9px] font-semibold text-white">
-              {unreadCount > 9 ? "9+" : unreadCount}
+              {unreadCount + newInquiries > 9 ? "9+" : unreadCount + newInquiries}
             </span>
           )}
         </button>
@@ -79,7 +81,12 @@ export function AdminMobileNav() {
             {ADMIN_NAV.map((item) => {
               const isActive = pathname.startsWith(item.href);
               const Icon = item.icon;
-              const showBadge = item.href === "/admin/notifications" && unreadCount > 0;
+              const badgeCount =
+                item.href === "/admin/notifications"
+                  ? unreadCount
+                  : item.href === "/admin/inquiries"
+                    ? newInquiries
+                    : 0;
               return (
                 <Link
                   key={item.href}
@@ -94,9 +101,9 @@ export function AdminMobileNav() {
                 >
                   <Icon className="h-5 w-5" />
                   <span className="truncate max-w-full">{item.label}</span>
-                  {showBadge && (
+                  {badgeCount > 0 && (
                     <span className="absolute top-2 right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-gold px-1 text-[9px] font-semibold text-white">
-                      {unreadCount > 9 ? "9+" : unreadCount}
+                      {badgeCount > 9 ? "9+" : badgeCount}
                     </span>
                   )}
                 </Link>

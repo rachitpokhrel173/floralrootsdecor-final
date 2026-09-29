@@ -8,7 +8,8 @@ export type AttentionKind =
   | "stale_quotation"
   | "overdue_invoice"
   | "unpaid_soon"
-  | "low_stock";
+  | "low_stock"
+  | "new_inquiry";
 
 export interface AttentionItem {
   id: string;
@@ -33,7 +34,6 @@ export interface DashboardStats {
   conversionRate: number;
   bookings: Booking[];
   revenueByMonth: { month: string; revenue: number }[];
-  bookingsByEventType: { name: string; value: number }[];
   /** Events in the next 14 days (excluding cancelled/completed), soonest first */
   upcoming: Booking[];
   /** Things the team should act on, most urgent first */
@@ -54,7 +54,6 @@ const EMPTY_STATS: DashboardStats = {
   conversionRate: 0,
   bookings: [],
   revenueByMonth: [],
-  bookingsByEventType: [],
   upcoming: [],
   attention: [],
 };
@@ -91,6 +90,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     { data: sentQuotations },
     { data: openInvoices },
     { data: lowStockItems },
+    { data: newInquiries },
   ] = await Promise.all([
     supabase.from("bookings").select("*").order("created_at", { ascending: false }),
     supabase.from("payments").select("*"),
@@ -109,6 +109,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       .select("id, name, quantity")
       .lte("quantity", LOW_STOCK_THRESHOLD)
       .order("quantity", { ascending: true }),
+    // Errors (e.g. table not created yet) just mean no inquiry items
+    supabase.from("inquiries").select("id, full_name, created_at").eq("status", "new"),
   ]);
 
   if (bookingsError) {
@@ -171,16 +173,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     revenueByMonth.push({ month: d.toLocaleDateString("en-US", { month: "short" }), revenue });
   }
 
-  // Booking distribution by event type
-  const typeMap = new Map<string, number>();
-  for (const b of allBookings) {
-    typeMap.set(b.event_type, (typeMap.get(b.event_type) ?? 0) + 1);
-  }
-  const bookingsByEventType = Array.from(typeMap.entries()).map(([name, value]) => ({
-    name,
-    value,
-  }));
-
   const upcoming = allBookings
     .filter((b) => {
       const d = dayDiff(todayStr, b.event_date);
@@ -198,6 +190,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     sentQuotations: (sentQuotations ?? []) as unknown as StaleQuotationRow[],
     openInvoices: (openInvoices ?? []) as unknown as OpenInvoiceRow[],
     lowStockItems: lowStockItems ?? [],
+    newInquiries: newInquiries ?? [],
   });
 
   return {
@@ -214,7 +207,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     conversionRate,
     bookings: allBookings,
     revenueByMonth,
-    bookingsByEventType,
     upcoming,
     attention,
   };
@@ -241,15 +233,34 @@ function buildAttentionItems({
   sentQuotations,
   openInvoices,
   lowStockItems,
+  newInquiries,
 }: {
   bookings: Booking[];
   todayStr: string;
   sentQuotations: StaleQuotationRow[];
   openInvoices: OpenInvoiceRow[];
   lowStockItems: { id: string; name: string; quantity: number }[];
+  newInquiries: { id: string; full_name: string; created_at: string }[];
 }): AttentionItem[] {
   const items: AttentionItem[] = [];
   const now = Date.now();
+
+  // Website contact-form messages nobody has replied to yet
+  if (newInquiries.length > 0) {
+    const oldestDays = Math.max(
+      ...newInquiries.map((i) => Math.floor((now - Date.parse(i.created_at)) / DAY_MS))
+    );
+    const names = newInquiries.slice(0, 3).map((i) => i.full_name).join(", ");
+    const extra = newInquiries.length > 3 ? ` +${newInquiries.length - 3} more` : "";
+    items.push({
+      id: "new-inquiries",
+      kind: "new_inquiry",
+      title: `${newInquiries.length} new website inquir${newInquiries.length === 1 ? "y" : "ies"}`,
+      detail: `${names}${extra} — reply and update the status`,
+      href: "/admin/inquiries",
+      severity: oldestDays >= 1 ? "high" : "medium",
+    });
+  }
 
   for (const b of bookings) {
     // New enquiries nobody has contacted within a day

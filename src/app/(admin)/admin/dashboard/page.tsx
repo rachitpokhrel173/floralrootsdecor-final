@@ -13,7 +13,6 @@ import {
 import { getDashboardStats } from "@/lib/data/dashboard";
 import { StatCard } from "@/components/admin/dashboard/stat-card";
 import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
-import { EventTypeChart } from "@/components/admin/dashboard/event-type-chart";
 import { RecentActivity } from "@/components/admin/dashboard/recent-activity";
 import { NepaliCalendar } from "@/components/nepali-calendar/nepali-calendar";
 import { AttentionPanel } from "@/components/admin/dashboard/attention-panel";
@@ -164,7 +163,6 @@ export default async function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4 min-w-0">
           <RevenueChart data={stats.revenueByMonth} />
-          <EventTypeChart data={stats.bookingsByEventType} />
         </div>
         <div className="space-y-4">
           <RecentActivity />

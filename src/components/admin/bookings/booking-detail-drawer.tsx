@@ -1,27 +1,51 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { toast } from "sonner";
-import { Phone, Mail, MapPin, Users2, Wallet, Palette, Clock } from "lucide-react";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Phone,
+  Mail,
+  MapPin,
+  Users2,
+  Wallet,
+  Palette,
+  CalendarDays,
+  Clock,
+  Droplets,
+  Globe,
+  ListChecks,
+  History,
+  RefreshCw,
+  FilePlus2,
+  Hourglass,
+  StickyNote,
+} from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
+import {
+  DrawerShell,
+  DrawerHero,
+  DrawerBody,
+  DrawerFooter,
+  DrawerSection,
+  DrawerEmpty,
+  InfoCard,
+  InfoItem,
+  QuickContact,
+  StatTiles,
+  drawerTabsListClass,
+} from "@/components/admin/shared/detail-drawer";
 import { useBookingDetail } from "@/hooks/use-booking-detail";
 import { updateBookingAction } from "@/actions/booking-management-actions";
-import { getInitials, formatDate, formatCurrency, daysUntil } from "@/lib/utils";
+import { formatDate, formatCurrency, daysUntil, cn } from "@/lib/utils";
 import { BookingStatusBadge, BookingPriorityBadge, PaymentStatusBadge } from "./booking-badges";
 import { StatusChangeDialog } from "./status-change-dialog";
 import type { Booking, BookingStatus, BookingPriority, PaymentStatus } from "@/types/database.types";
@@ -29,6 +53,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const PRIORITY_OPTIONS: BookingPriority[] = ["low", "medium", "high", "urgent"];
 const PAYMENT_OPTIONS: PaymentStatus[] = ["unpaid", "partial", "paid", "refunded"];
+
+function formatTime(time: string) {
+  const [h, m] = time.split(":").map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2, "0")} ${h >= 12 ? "PM" : "AM"}`;
+}
+
+function countdown(days: number) {
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  if (days > 1) return `${days} days`;
+  return "Past";
+}
 
 export function BookingDetailDrawer({
   booking,
@@ -49,6 +85,13 @@ export function BookingDetailDrawer({
   if (!booking) return null;
 
   const days = daysUntil(booking.event_date);
+  const servicesTotal = services.reduce((sum, s) => sum + (s.estimated_price ?? 0), 0);
+  const mapHref =
+    booking.venue_lat && booking.venue_lng
+      ? `https://www.google.com/maps?q=${booking.venue_lat},${booking.venue_lng}`
+      : booking.venue
+        ? `https://www.google.com/maps/search/${encodeURIComponent(booking.venue)}`
+        : undefined;
 
   function handleUpdate(updates: Parameters<typeof updateBookingAction>[1]) {
     if (!booking) return;
@@ -64,136 +107,201 @@ export function BookingDetailDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarFallback className="bg-gold/15 text-gold-dark">
-                  {getInitials(booking.full_name)}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <SheetTitle>{booking.full_name}</SheetTitle>
-                <SheetDescription>{booking.booking_code}</SheetDescription>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-2">
-            <button
-              type="button"
-              onClick={() => setStatusDialogOpen(true)}
-              className="cursor-pointer hover:opacity-80 transition-opacity"
-            >
-              <BookingStatusBadge status={localStatus ?? booking.status} />
-            </button>
-            <PriorityPicker
-              value={booking.priority}
-              disabled={isPending}
-              onChange={(v) => handleUpdate({ priority: v })}
-            />
-            <PaymentPicker
-              value={booking.payment_status}
-              disabled={isPending}
-              onChange={(v) => handleUpdate({ payment_status: v })}
-            />
-          </div>
-        </SheetHeader>
+      <DrawerShell>
+        <DrawerHero
+          name={booking.full_name}
+          eyebrow={booking.booking_code}
+          subtitle={
+            <>
+              {booking.event_type} · {formatDate(booking.event_date)}
+              {booking.event_time && ` at ${formatTime(booking.event_time)}`}
+            </>
+          }
+          badges={
+            <>
+              <button
+                type="button"
+                onClick={() => setStatusDialogOpen(true)}
+                className="cursor-pointer transition-opacity hover:opacity-80"
+                title="Change status"
+              >
+                <BookingStatusBadge status={localStatus ?? booking.status} />
+              </button>
+              <PriorityPicker
+                value={booking.priority}
+                disabled={isPending}
+                onChange={(v) => handleUpdate({ priority: v })}
+              />
+              <PaymentPicker
+                value={booking.payment_status}
+                disabled={isPending}
+                onChange={(v) => handleUpdate({ payment_status: v })}
+              />
+            </>
+          }
+        >
+          <QuickContact phone={booking.phone} email={booking.email} />
+          <StatTiles
+            items={[
+              {
+                label: days >= 0 ? "Event in" : "Event",
+                value: countdown(days),
+                icon: Hourglass,
+                tone: days >= 0 && days <= 3 ? "red" : "gold",
+              },
+              { label: "Guests", value: booking.guest_count ?? "—", icon: Users2 },
+              { label: "Budget", value: formatCurrency(booking.budget), icon: Wallet, tone: "emerald" },
+            ]}
+          />
+        </DrawerHero>
 
-        <div className="px-6 pb-6">
-          <Tabs defaultValue="overview" className="mt-4">
-            <TabsList className="grid w-full grid-cols-3">
+        <DrawerBody>
+          <Tabs defaultValue="overview">
+            <TabsList className={cn(drawerTabsListClass, "grid-cols-3")}>
               <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="services">Services</TabsTrigger>
+              <TabsTrigger value="services">
+                Services{services.length > 0 && ` (${services.length})`}
+              </TabsTrigger>
               <TabsTrigger value="activity">Timeline</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview" className="space-y-5">
-              <div className="grid grid-cols-2 gap-3">
-                <InfoRow icon={Phone} label="Phone" value={booking.phone} />
-                <InfoRow icon={Mail} label="Email" value={booking.email ?? "—"} />
-                <InfoRow icon={MapPin} label="Venue" value={booking.venue ?? "—"} />
-                <InfoRow icon={Users2} label="Guests" value={booking.guest_count?.toString() ?? "—"} />
-                <InfoRow icon={Wallet} label="Budget" value={formatCurrency(booking.budget)} />
-                <InfoRow icon={Palette} label="Theme" value={booking.theme ?? "—"} />
-              </div>
+            <TabsContent value="overview" className="mt-5 space-y-6">
+              <DrawerSection title="Event">
+                <InfoCard>
+                  <InfoItem
+                    icon={CalendarDays}
+                    label="Date"
+                    value={`${formatDate(booking.event_date, { weekday: "long" })}${
+                      booking.event_time ? ` · ${formatTime(booking.event_time)}` : ""
+                    }`}
+                  />
+                  <InfoItem icon={MapPin} label="Venue" value={booking.venue} href={mapHref} />
+                  <InfoItem icon={Palette} label="Theme" value={booking.theme} />
+                  <InfoItem icon={Droplets} label="Colour preferences" value={booking.color_preferences} />
+                </InfoCard>
+              </DrawerSection>
 
-              <Separator />
-
-              <div className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>
-                  Event on <strong>{formatDate(booking.event_date)}</strong>
-                  {days >= 0 ? ` — ${days} day${days === 1 ? "" : "s"} remaining` : " — past event"}
-                </span>
-              </div>
+              <DrawerSection title="Contact">
+                <InfoCard>
+                  <InfoItem
+                    icon={Phone}
+                    label="Phone"
+                    value={booking.phone}
+                    href={`tel:${booking.phone}`}
+                    copyable={booking.phone}
+                  />
+                  <InfoItem
+                    icon={Mail}
+                    label="Email"
+                    value={booking.email}
+                    href={booking.email ? `mailto:${booking.email}` : undefined}
+                    copyable={booking.email}
+                  />
+                  <InfoItem
+                    icon={Globe}
+                    label="Booked via"
+                    value={
+                      <span className="capitalize">
+                        {booking.source.replace(/_/g, " ")} · {formatDate(booking.created_at)}
+                      </span>
+                    }
+                  />
+                </InfoCard>
+              </DrawerSection>
 
               {booking.custom_notes && (
-                <div className="rounded-xl bg-muted/40 p-4 text-sm">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Custom Notes</p>
-                  {booking.custom_notes}
-                </div>
+                <DrawerSection title="Client notes">
+                  <div className="flex gap-3 rounded-2xl border border-gold/30 bg-gold/5 p-4">
+                    <StickyNote className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
+                    <p className="whitespace-pre-wrap text-sm">{booking.custom_notes}</p>
+                  </div>
+                </DrawerSection>
               )}
             </TabsContent>
 
-            <TabsContent value="services">
+            <TabsContent value="services" className="mt-5">
               {servicesLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-10 w-full" />
+                    <Skeleton key={i} className="h-12 w-full rounded-2xl" />
                   ))}
                 </div>
               ) : services.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  No services selected for this booking.
-                </p>
+                <DrawerEmpty icon={ListChecks} text="No services selected for this booking." />
               ) : (
-                <div className="space-y-2">
+                <InfoCard>
                   {services.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center justify-between rounded-xl border border-border px-4 py-3"
-                    >
-                      <span className="text-sm font-medium capitalize">
+                    <div key={s.id} className="flex items-center gap-3 px-3.5 py-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold-dark">
+                        <ListChecks className="h-4 w-4" />
+                      </span>
+                      <span className="flex-1 text-sm font-medium capitalize">
                         {s.service_name.replace(/_/g, " ")}
                       </span>
-                      {s.estimated_price && (
-                        <span className="text-sm text-muted-foreground">
-                          {formatCurrency(s.estimated_price)}
-                        </span>
-                      )}
+                      <span className="text-sm text-muted-foreground">
+                        {s.estimated_price ? formatCurrency(s.estimated_price) : "—"}
+                      </span>
                     </div>
                   ))}
-                </div>
+                  {servicesTotal > 0 && (
+                    <div className="flex items-center justify-between bg-muted/40 px-3.5 py-3 text-sm">
+                      <span className="font-medium">Estimated total</span>
+                      <span className="font-display text-base">{formatCurrency(servicesTotal)}</span>
+                    </div>
+                  )}
+                </InfoCard>
               )}
             </TabsContent>
 
-            <TabsContent value="activity">
+            <TabsContent value="activity" className="mt-5">
               {activityLoading ? (
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full" />
+                    <Skeleton key={i} className="h-12 w-full rounded-2xl" />
                   ))}
                 </div>
               ) : activity.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8 text-center">
-                  No activity recorded yet.
-                </p>
+                <DrawerEmpty icon={History} text="No activity recorded yet." />
               ) : (
-                <div className="relative space-y-5 pl-4 border-l border-border">
-                  {activity.map((a) => (
-                    <div key={a.id} className="relative">
-                      <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-gold" />
+                <ol className="relative ml-2 space-y-4 border-l border-border pl-5">
+                  {activity.map((a, i) => (
+                    <li key={a.id} className="relative">
+                      <span
+                        className={cn(
+                          "absolute -left-[26px] top-1 h-3 w-3 rounded-full ring-4 ring-background",
+                          i === 0 ? "bg-gold" : "bg-muted-foreground/30"
+                        )}
+                      />
                       <p className="text-sm font-medium">{a.description ?? a.action}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(a.created_at)}</p>
-                    </div>
+                      <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />
+                        {formatDate(a.created_at)} ·{" "}
+                        {new Date(a.created_at).toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </li>
                   ))}
-                </div>
+                </ol>
               )}
             </TabsContent>
           </Tabs>
-        </div>
-      </SheetContent>
+        </DrawerBody>
+
+        <DrawerFooter>
+          <div className="flex gap-2">
+            <Button variant="outline" className="flex-1" asChild>
+              <Link href="/admin/quotations?new=1">
+                <FilePlus2 className="h-4 w-4" /> New Quotation
+              </Link>
+            </Button>
+            <Button variant="luxury" className="flex-1" onClick={() => setStatusDialogOpen(true)}>
+              <RefreshCw className="h-4 w-4" /> Change Status
+            </Button>
+          </div>
+        </DrawerFooter>
+      </DrawerShell>
 
       <StatusChangeDialog
         booking={booking}
@@ -203,26 +311,6 @@ export function BookingDetailDrawer({
         onChanged={(newStatus) => setLocalStatus(newStatus)}
       />
     </Sheet>
-  );
-}
-
-function InfoRow({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-start gap-2.5">
-      <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-      <div className="min-w-0">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value}</p>
-      </div>
-    </div>
   );
 }
 
@@ -237,7 +325,10 @@ function PriorityPicker({
 }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as BookingPriority)} disabled={disabled}>
-      <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none focus:ring-0 [&>svg]:hidden cursor-pointer hover:opacity-80 transition-opacity">
+      <SelectTrigger
+        title="Change priority"
+        className="h-auto w-auto border-none bg-transparent p-0 shadow-none focus:ring-0 [&>svg]:hidden cursor-pointer hover:opacity-80 transition-opacity"
+      >
         <BookingPriorityBadge priority={value} />
       </SelectTrigger>
       <SelectContent align="start">
@@ -262,7 +353,10 @@ function PaymentPicker({
 }) {
   return (
     <Select value={value} onValueChange={(v) => onChange(v as PaymentStatus)} disabled={disabled}>
-      <SelectTrigger className="h-auto w-auto border-none bg-transparent p-0 shadow-none focus:ring-0 [&>svg]:hidden cursor-pointer hover:opacity-80 transition-opacity">
+      <SelectTrigger
+        title="Change payment status"
+        className="h-auto w-auto border-none bg-transparent p-0 shadow-none focus:ring-0 [&>svg]:hidden cursor-pointer hover:opacity-80 transition-opacity"
+      >
         <PaymentStatusBadge status={value} />
       </SelectTrigger>
       <SelectContent align="start">

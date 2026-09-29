@@ -192,7 +192,7 @@ export const designCategories: DesignCategory[] = [
     slug: "car-decoration",
     label: "Car Decoration",
     cover: carPhotos[2].image,
-    description: "Bridal and groom car decoration with fresh florals and ribbon work.",
+    description: "Wedding car decoration and car rental — fresh florals and ribbon work for the bride and groom.",
     isReal: true,
     photos: carPhotos,
   },
@@ -446,7 +446,8 @@ export const allServices = [
       { name: "Wedding Stage Decoration", description: "Statement stage design for the ceremony and reception." },
       { name: "Aisle & Entrance Decoration", description: "Floral aisles, gates and welcome arches." },
       { name: "Bratabandha & Pasni Decoration", description: "Traditional ceremony decoration with cultural detailing." },
-      { name: "Bridal Car Decoration", description: "Fresh floral and ribbon work for the wedding car." },
+      { name: "Wedding Car Decoration", description: "Fresh floral and ribbon work for the bride and groom's wedding car." },
+      { name: "Wedding Car Rental", description: "Wedding cars on hire for the bride and groom's arrival, doli and family travel — decorated and ready on the day.", isNew: true },
     ],
   },
   {

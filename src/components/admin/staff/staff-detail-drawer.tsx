@@ -2,17 +2,27 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Mail, Phone, Trash2, Plus, KeyRound, Loader2, CalendarX2 } from "lucide-react";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Trash2,
+  Plus,
+  KeyRound,
+  Loader2,
+  CalendarX2,
+  ListTodo,
+  CheckCircle2,
+  CalendarClock,
+} from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import {
+  DrawerShell,
+  DrawerHero,
+  DrawerBody,
+  DrawerEmpty,
+  QuickContact,
+  StatTiles,
+  drawerTabsListClass,
+} from "@/components/admin/shared/detail-drawer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -40,7 +50,7 @@ import {
   deleteStaffAvailabilityAction,
 } from "@/actions/staff-actions";
 import { STAFF_ROLES, ROLE_LABELS, generateTempPassword } from "@/lib/validations/staff";
-import { getInitials, formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 import type { StaffWithStats } from "@/lib/data/staff";
 import type { TaskStatus, UserRole } from "@/types/database.types";
 
@@ -200,46 +210,41 @@ export function StaffDetailDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              {member.avatar_url && <AvatarImage src={member.avatar_url} alt={member.full_name} />}
-              <AvatarFallback>{getInitials(member.full_name)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <SheetTitle>{member.full_name}</SheetTitle>
-              <SheetDescription asChild>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <RoleBadge role={member.role} />
-                  {!member.is_active && <Badge variant="destructive">Inactive</Badge>}
-                </div>
-              </SheetDescription>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-3 pt-2 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Mail className="h-3.5 w-3.5" /> {member.email}
-            </span>
-            {member.phone && (
-              <span className="flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5" /> {member.phone}
-              </span>
-            )}
-          </div>
-        </SheetHeader>
+      <DrawerShell>
+        <DrawerHero
+          name={member.full_name}
+          avatarUrl={member.avatar_url}
+          eyebrow="Team member"
+          subtitle={member.designation || member.email}
+          badges={
+            <>
+              <RoleBadge role={member.role} />
+              <Badge variant={member.is_active ? "success" : "destructive"}>
+                {member.is_active ? "Active" : "Inactive"}
+              </Badge>
+            </>
+          }
+        >
+          <QuickContact phone={member.phone} email={member.email} />
+          <StatTiles
+            items={[
+              { label: "Active tasks", value: member.activeTasksCount, icon: ListTodo, tone: "gold" },
+              { label: "Completed", value: member.completedTasksCount, icon: CheckCircle2, tone: "emerald" },
+              { label: "Upcoming events", value: member.upcomingBookingsCount, icon: CalendarClock },
+            ]}
+          />
+        </DrawerHero>
 
-        <Separator className="my-4" />
-
+        <DrawerBody>
         <Tabs defaultValue="profile">
-          <TabsList className="grid grid-cols-3 w-full">
+          <TabsList className={cn(drawerTabsListClass, "grid-cols-3")}>
             <TabsTrigger value="profile">Profile</TabsTrigger>
             <TabsTrigger value="tasks">Tasks ({tasks.length})</TabsTrigger>
             <TabsTrigger value="availability">Availability</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="profile" className="space-y-4 mt-4">
-            <div className="flex items-center justify-between rounded-xl border border-border p-3">
+          <TabsContent value="profile" className="space-y-4 mt-5">
+            <div className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-3.5">
               <div>
                 <p className="text-sm font-medium">Active</p>
                 <p className="text-xs text-muted-foreground">Inactive staff can&apos;t sign in or be assigned work.</p>
@@ -247,8 +252,8 @@ export function StaffDetailDrawer({
               <Switch checked={member.is_active} onCheckedChange={toggleActive} disabled={isPending} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2 space-y-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2 space-y-1.5">
                 <Label>Full Name</Label>
                 <Input
                   value={profile.full_name}
@@ -274,7 +279,7 @@ export function StaffDetailDrawer({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="col-span-2 space-y-1.5">
+              <div className="sm:col-span-2 space-y-1.5">
                 <Label>Designation</Label>
                 <Input
                   value={profile.designation}
@@ -301,7 +306,7 @@ export function StaffDetailDrawer({
               </div>
             </div>
 
-            <div className="flex gap-2 pt-2">
+            <div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row">
               <Button onClick={saveProfile} disabled={isPending} className="flex-1">
                 {isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 Save Changes
@@ -312,8 +317,8 @@ export function StaffDetailDrawer({
             </div>
           </TabsContent>
 
-          <TabsContent value="tasks" className="space-y-4 mt-4">
-            <div className="rounded-xl border border-border p-3 space-y-2.5">
+          <TabsContent value="tasks" className="space-y-4 mt-5">
+            <div className="rounded-2xl border border-border bg-card p-3.5 space-y-2.5">
               <p className="text-sm font-medium">Assign a task</p>
               <Input
                 placeholder="Task title"
@@ -345,11 +350,11 @@ export function StaffDetailDrawer({
                 ))}
               </div>
             ) : tasks.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">No tasks assigned yet.</p>
+              <DrawerEmpty icon={ListTodo} text="No tasks assigned yet." />
             ) : (
               <div className="space-y-2">
                 {tasks.map((task) => (
-                  <div key={task.id} className="rounded-xl border border-border p-3 space-y-2">
+                  <div key={task.id} className="rounded-2xl border border-border bg-card p-3.5 space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{task.title}</p>
@@ -394,8 +399,8 @@ export function StaffDetailDrawer({
             )}
           </TabsContent>
 
-          <TabsContent value="availability" className="space-y-4 mt-4">
-            <div className="rounded-xl border border-border p-3 space-y-2.5">
+          <TabsContent value="availability" className="space-y-4 mt-5">
+            <div className="rounded-2xl border border-border bg-card p-3.5 space-y-2.5">
               <p className="text-sm font-medium">Mark a date unavailable</p>
               <div className="flex gap-2">
                 <Input
@@ -421,7 +426,7 @@ export function StaffDetailDrawer({
                 ))}
               </div>
             ) : availability.filter((a) => !a.is_available).length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">No unavailable dates on record.</p>
+              <DrawerEmpty icon={CalendarX2} text="No unavailable dates on record." />
             ) : (
               <div className="space-y-2">
                 {availability
@@ -429,7 +434,7 @@ export function StaffDetailDrawer({
                   .map((a) => (
                     <div
                       key={a.id}
-                      className="flex items-center justify-between rounded-xl border border-border p-3"
+                      className="flex items-center justify-between rounded-2xl border border-border bg-card p-3.5"
                     >
                       <div className="flex items-center gap-2.5">
                         <CalendarX2 className="h-4 w-4 text-muted-foreground" />
@@ -453,7 +458,8 @@ export function StaffDetailDrawer({
             )}
           </TabsContent>
         </Tabs>
-      </SheetContent>
+        </DrawerBody>
+      </DrawerShell>
     </Sheet>
   );
 }

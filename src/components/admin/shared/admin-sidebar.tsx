@@ -8,10 +8,12 @@ import { ChevronsLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ADMIN_NAV } from "@/lib/constants/admin-nav";
 import { useAdminUiStore } from "@/stores/admin-ui-store";
+import { useInquiries } from "@/hooks/use-inquiries";
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebar } = useAdminUiStore();
+  const { newCount: newInquiries } = useInquiries();
 
   return (
     <motion.aside
@@ -58,6 +60,16 @@ export function AdminSidebar() {
               )}
               <Icon className="h-4 w-4 shrink-0" />
               {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
+              {item.href === "/admin/inquiries" && newInquiries > 0 && (
+                <span
+                  className={cn(
+                    "flex h-5 min-w-5 items-center justify-center rounded-full bg-gold px-1.5 text-[10px] font-semibold text-white",
+                    sidebarCollapsed ? "absolute right-1.5 top-1 h-4 min-w-4 px-1" : "ml-auto"
+                  )}
+                >
+                  {newInquiries > 99 ? "99+" : newInquiries}
+                </span>
+              )}
             </Link>
           );
         })}

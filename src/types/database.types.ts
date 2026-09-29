@@ -17,6 +17,7 @@ export type QuotationStatus = "draft" | "sent" | "approved" | "rejected" | "expi
 export type InvoiceStatus = "draft" | "sent" | "partial" | "paid" | "overdue" | "cancelled";
 export type PaymentMethod = "cash" | "bank" | "card" | "stripe" | "other";
 export type TaskStatus = "pending" | "in_progress" | "completed" | "blocked";
+export type InquiryStatus = "new" | "contacted" | "converted" | "closed";
 export type NotificationType =
   | "new_booking" | "payment_received" | "upcoming_event" | "staff_assignment"
   | "reminder" | "quotation_approved" | "invoice_paid" | "system";
@@ -332,6 +333,28 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["inventory_bookings"]["Row"]>;
         Relationships: [];
       };
+      inquiries: {
+        Row: {
+          id: string;
+          full_name: string;
+          phone: string;
+          email: string | null;
+          event_type: string | null;
+          event_date: string | null;
+          message: string | null;
+          status: InquiryStatus;
+          notes: string | null;
+          source: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["inquiries"]["Row"]> & {
+          full_name: string;
+          phone: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["inquiries"]["Row"]>;
+        Relationships: [];
+      };
       vendors: {
         Row: {
           id: string;
@@ -438,6 +461,7 @@ export type Invoice = Database["public"]["Tables"]["invoices"]["Row"];
 export type Payment = Database["public"]["Tables"]["payments"]["Row"];
 export type Task = Database["public"]["Tables"]["tasks"]["Row"];
 export type Vendor = Database["public"]["Tables"]["vendors"]["Row"];
+export type Inquiry = Database["public"]["Tables"]["inquiries"]["Row"];
 export type InventoryItem = Database["public"]["Tables"]["inventory"]["Row"];
 export type Settings = Database["public"]["Tables"]["settings"]["Row"];
 export type CustomerNote = Database["public"]["Tables"]["customer_notes"]["Row"];

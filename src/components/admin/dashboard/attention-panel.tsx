@@ -8,6 +8,7 @@ import {
   PackageMinus,
   CheckCircle2,
   ChevronRight,
+  Inbox,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +22,7 @@ const KIND_ICON: Record<AttentionKind, typeof PhoneCall> = {
   overdue_invoice: ReceiptText,
   unpaid_soon: Wallet,
   low_stock: PackageMinus,
+  new_inquiry: Inbox,
 };
 
 const MAX_VISIBLE = 6;

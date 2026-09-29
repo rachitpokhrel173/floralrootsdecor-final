@@ -3,23 +3,43 @@
 import { useState, useTransition } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Loader2, Phone, Mail, MapPin, Star, Plus } from "lucide-react";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
+  Loader2,
+  Phone,
+  Mail,
+  MapPin,
+  Star,
+  Plus,
+  Pencil,
+  UserRound,
+  Handshake,
+  Wallet,
+  FileText,
+  StickyNote,
+  Receipt,
+} from "lucide-react";
+import { Sheet } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DrawerShell,
+  DrawerHero,
+  DrawerBody,
+  DrawerSection,
+  DrawerEmpty,
+  HeroIconButton,
+  InfoCard,
+  InfoItem,
+  QuickContact,
+  StatTiles,
+  drawerTabsListClass,
+} from "@/components/admin/shared/detail-drawer";
 import { getVendorPaymentsAction, recordVendorPaymentAction } from "@/actions/vendor-actions";
 import { VENDOR_CATEGORY_LABELS } from "@/lib/validations/vendor";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, cn } from "@/lib/utils";
 import type { VendorWithStats } from "@/lib/data/vendors";
 
 export function VendorDetailDrawer({
@@ -46,6 +66,10 @@ export function VendorDetailDrawer({
 
   if (!vendor) return null;
 
+  const payments = paymentsQuery.data ?? [];
+  const categoryLabel =
+    VENDOR_CATEGORY_LABELS[vendor.category as keyof typeof VENDOR_CATEGORY_LABELS] ?? vendor.category;
+
   function recordPayment() {
     if (amount <= 0) {
       toast.error("Enter an amount greater than 0");
@@ -66,120 +90,168 @@ export function VendorDetailDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-xl overflow-y-auto">
-        <SheetHeader>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <SheetTitle>{vendor.name}</SheetTitle>
-              <SheetDescription>{VENDOR_CATEGORY_LABELS[vendor.category as keyof typeof VENDOR_CATEGORY_LABELS] ?? vendor.category}</SheetDescription>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => onEdit(vendor)}>
-              Edit
-            </Button>
-          </div>
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[11px] text-muted-foreground">Total Paid</p>
-              <p className="font-display text-lg">{formatCurrency(vendor.totalPaid)}</p>
-            </div>
-            <div className="rounded-xl bg-muted/40 p-3">
-              <p className="text-[11px] text-muted-foreground">Rating</p>
-              <p className="font-display text-lg flex items-center gap-1">
-                {vendor.rating ? (
-                  <>
-                    <Star className="h-4 w-4 fill-gold text-gold" /> {vendor.rating.toFixed(1)}
-                  </>
-                ) : (
-                  "—"
-                )}
-              </p>
-            </div>
-          </div>
-        </SheetHeader>
-
-        <div className="px-6 pb-6">
-          <Tabs defaultValue="info" className="mt-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="info">Info</TabsTrigger>
-              <TabsTrigger value="payments">Payments</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="info" className="space-y-4">
-              {vendor.contact_person && <InfoRow icon={Phone} label="Contact Person" value={vendor.contact_person} />}
-              {vendor.phone && <InfoRow icon={Phone} label="Phone" value={vendor.phone} />}
-              {vendor.email && <InfoRow icon={Mail} label="Email" value={vendor.email} />}
-              {vendor.address && <InfoRow icon={MapPin} label="Address" value={vendor.address} />}
-              {vendor.notes && (
-                <div className="rounded-xl bg-muted/40 p-4 text-sm">
-                  <p className="text-xs font-medium text-muted-foreground mb-1">Notes</p>
-                  {vendor.notes}
-                </div>
-              )}
+      <DrawerShell>
+        <DrawerHero
+          name={vendor.name}
+          avatarIcon={<Handshake className="h-6 w-6" />}
+          eyebrow="Vendor"
+          subtitle={categoryLabel}
+          actions={
+            <HeroIconButton label="Edit vendor" onClick={() => onEdit(vendor)}>
+              <Pencil className="h-4 w-4" />
+            </HeroIconButton>
+          }
+          badges={
+            <>
               <Badge variant={vendor.is_active ? "success" : "outline"}>
                 {vendor.is_active ? "Active" : "Inactive"}
               </Badge>
+              <Badge variant="luxury">{categoryLabel}</Badge>
+            </>
+          }
+        >
+          <QuickContact phone={vendor.phone} email={vendor.email} />
+          <StatTiles
+            items={[
+              { label: "Total paid", value: formatCurrency(vendor.totalPaid), icon: Wallet, tone: "emerald" },
+              {
+                label: "Rating",
+                value: vendor.rating ? `${vendor.rating.toFixed(1)} / 5` : "—",
+                icon: Star,
+                tone: "gold",
+              },
+              {
+                label: "Payments",
+                value: paymentsQuery.isLoading ? "…" : payments.length,
+                icon: Receipt,
+              },
+            ]}
+          />
+        </DrawerHero>
+
+        <DrawerBody>
+          <Tabs defaultValue="info">
+            <TabsList className={cn(drawerTabsListClass, "grid-cols-2")}>
+              <TabsTrigger value="info">Details</TabsTrigger>
+              <TabsTrigger value="payments">Payments</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="info" className="mt-5 space-y-6">
+              <DrawerSection title="Contact">
+                <InfoCard>
+                  <InfoItem icon={UserRound} label="Contact person" value={vendor.contact_person} />
+                  <InfoItem
+                    icon={Phone}
+                    label="Phone"
+                    value={vendor.phone}
+                    href={vendor.phone ? `tel:${vendor.phone}` : undefined}
+                    copyable={vendor.phone}
+                  />
+                  <InfoItem
+                    icon={Mail}
+                    label="Email"
+                    value={vendor.email}
+                    href={vendor.email ? `mailto:${vendor.email}` : undefined}
+                    copyable={vendor.email}
+                  />
+                  <InfoItem
+                    icon={MapPin}
+                    label="Address"
+                    value={vendor.address}
+                    href={
+                      vendor.address
+                        ? `https://www.google.com/maps/search/${encodeURIComponent(vendor.address)}`
+                        : undefined
+                    }
+                  />
+                  {vendor.contract_url && (
+                    <InfoItem icon={FileText} label="Contract" value="Open contract" href={vendor.contract_url} />
+                  )}
+                </InfoCard>
+              </DrawerSection>
+
+              {vendor.notes && (
+                <DrawerSection title="Notes">
+                  <div className="flex gap-3 rounded-2xl border border-gold/30 bg-gold/5 p-4">
+                    <StickyNote className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
+                    <p className="whitespace-pre-wrap text-sm">{vendor.notes}</p>
+                  </div>
+                </DrawerSection>
+              )}
+
+              <p className="text-center text-xs text-muted-foreground">
+                Added {formatDate(vendor.created_at)}
+              </p>
             </TabsContent>
 
-            <TabsContent value="payments" className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  min={0}
-                  placeholder="Amount"
-                  value={amount || ""}
-                  onChange={(e) => setAmount(Number(e.target.value))}
-                  className="w-32"
-                />
-                <Input
-                  placeholder="Note (optional)"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="flex-1"
-                />
-                <Button variant="outline" size="icon" onClick={recordPayment} disabled={isPending}>
+            <TabsContent value="payments" className="mt-5 space-y-5">
+              <div className="space-y-2.5 rounded-2xl border border-border bg-card p-3.5">
+                <p className="text-sm font-medium">Record a payment</p>
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <div className="relative sm:w-36">
+                    <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                      Rs.
+                    </span>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      placeholder="Amount"
+                      value={amount || ""}
+                      onChange={(e) => setAmount(Number(e.target.value))}
+                      className="pl-9"
+                    />
+                  </div>
+                  <Input
+                    placeholder="Note (optional)"
+                    value={note}
+                    onChange={(e) => setNote(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && recordPayment()}
+                    className="flex-1"
+                  />
+                </div>
+                <Button variant="luxury" className="w-full" onClick={recordPayment} disabled={isPending}>
                   {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                  Record Payment
                 </Button>
               </div>
-
-              <Separator />
 
               {paymentsQuery.isLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-14 w-full" />
+                    <Skeleton key={i} className="h-14 w-full rounded-2xl" />
                   ))}
                 </div>
-              ) : (paymentsQuery.data ?? []).length === 0 ? (
-                <p className="text-sm text-muted-foreground py-8 text-center">No payments recorded yet.</p>
+              ) : payments.length === 0 ? (
+                <DrawerEmpty icon={Wallet} text="No payments recorded yet." />
               ) : (
-                <div className="space-y-2">
-                  {paymentsQuery.data!.map((p) => (
-                    <div key={p.id} className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
-                      <div>
-                        <p className="text-sm font-medium">{formatCurrency(p.amount)}</p>
-                        {p.notes && <p className="text-xs text-muted-foreground">{p.notes}</p>}
+                <DrawerSection title="History">
+                  <InfoCard>
+                    {payments.map((p) => (
+                      <div key={p.id} className="flex items-center gap-3 px-3.5 py-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-600">
+                          <Wallet className="h-4 w-4" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold">{formatCurrency(p.amount)}</p>
+                          {p.notes && <p className="truncate text-xs text-muted-foreground">{p.notes}</p>}
+                        </div>
+                        <p className="shrink-0 text-xs text-muted-foreground">{formatDate(p.paid_at)}</p>
                       </div>
-                      <p className="text-xs text-muted-foreground">{formatDate(p.paid_at)}</p>
+                    ))}
+                    <div className="flex items-center justify-between bg-muted/40 px-3.5 py-3 text-sm">
+                      <span className="font-medium">Total paid</span>
+                      <span className="font-display text-base">
+                        {formatCurrency(payments.reduce((sum, p) => sum + Number(p.amount), 0))}
+                      </span>
                     </div>
-                  ))}
-                </div>
+                  </InfoCard>
+                </DrawerSection>
               )}
             </TabsContent>
           </Tabs>
-        </div>
-      </SheetContent>
+        </DrawerBody>
+      </DrawerShell>
     </Sheet>
-  );
-}
-
-function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
-  return (
-    <div className="flex items-start gap-2.5">
-      <Icon className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-      <div className="min-w-0">
-        <p className="text-[11px] text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value}</p>
-      </div>
-    </div>
   );
 }
