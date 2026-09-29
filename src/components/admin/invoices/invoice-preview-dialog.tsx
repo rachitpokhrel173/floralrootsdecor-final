@@ -33,7 +33,7 @@ export function InvoicePreviewDialog({
           </Button>
         </div>
 
-        <div id="invoice-print-area" className="p-8 space-y-8 bg-white text-black print:p-0">
+        <div id="invoice-print-area" className="p-4 sm:p-8 space-y-6 sm:space-y-8 bg-white text-black print:p-0">
           <div className="flex items-start justify-between border-b border-neutral-200 pb-6">
             <div className="flex items-start gap-3">
               {companyProfile.logo_url && (
@@ -63,7 +63,7 @@ export function InvoicePreviewDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 print:grid-cols-2">
             <div>
               <p className="text-xs uppercase tracking-wide text-neutral-400 mb-1">Bill To</p>
               <p className="font-medium">{invoice.booking?.full_name}</p>

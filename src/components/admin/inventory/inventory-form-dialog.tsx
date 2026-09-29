@@ -118,7 +118,7 @@ export function InventoryFormDialog({
             {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Category</Label>
               <Select value={category} onValueChange={(v) => setValue("category", v as InventoryFormValues["category"])}>
@@ -168,7 +168,7 @@ export function InventoryFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>SKU</Label>
               <Input {...register("sku")} />
@@ -179,7 +179,7 @@ export function InventoryFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Barcode</Label>
               <Input {...register("barcode")} />

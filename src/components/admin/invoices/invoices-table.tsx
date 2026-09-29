@@ -37,6 +37,7 @@ import { InvoicePreviewDialog } from "./invoice-preview-dialog";
 import { ConvertQuotationDialog } from "./convert-quotation-dialog";
 import { RecordPaymentDialog } from "@/components/admin/payments/record-payment-dialog";
 import { useInvoices } from "@/hooks/use-invoices";
+import { useQueryFlag } from "@/hooks/use-query-flag";
 import { updateInvoiceStatusAction, deleteInvoiceAction } from "@/actions/invoice-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { InvoiceWithBooking, ApprovedQuotationOption } from "@/lib/data/invoices";
@@ -66,6 +67,7 @@ export function InvoicesTable({ bookingOptions, convertibleQuotations, companyPr
   const [statusFilter, setStatusFilter] = useState<InvoiceStatus | "all">("all");
   const [builderOpen, setBuilderOpen] = useState(false);
   const [convertOpen, setConvertOpen] = useState(false);
+  useQueryFlag("new", () => setBuilderOpen(true));
   const [editingInvoice, setEditingInvoice] = useState<InvoiceWithBooking | null>(null);
   const [previewInvoice, setPreviewInvoice] = useState<InvoiceWithBooking | null>(null);
   const [paymentInvoice, setPaymentInvoice] = useState<InvoiceWithBooking | null>(null);
@@ -124,7 +126,7 @@ export function InvoicesTable({ bookingOptions, convertibleQuotations, companyPr
             />
           </div>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as InvoiceStatus | "all")}>
-            <SelectTrigger className="w-[160px] shrink-0">
+            <SelectTrigger className="w-[132px] sm:w-[160px] shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -152,8 +154,9 @@ export function InvoicesTable({ bookingOptions, convertibleQuotations, companyPr
       </div>
 
       <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-left text-muted-foreground">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[760px] text-sm">
+          <thead className="bg-muted/40 text-left text-muted-foreground [&_th]:whitespace-nowrap">
             <tr>
               <th className="px-4 py-3 font-medium">Number</th>
               <th className="px-4 py-3 font-medium">Client</th>
@@ -265,6 +268,7 @@ export function InvoicesTable({ bookingOptions, convertibleQuotations, companyPr
               })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <InvoiceBuilderDialog

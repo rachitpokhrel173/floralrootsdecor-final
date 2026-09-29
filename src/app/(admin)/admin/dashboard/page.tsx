@@ -16,24 +16,64 @@ import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 import { EventTypeChart } from "@/components/admin/dashboard/event-type-chart";
 import { RecentActivity } from "@/components/admin/dashboard/recent-activity";
 import { NepaliCalendar } from "@/components/nepali-calendar/nepali-calendar";
+import { AttentionPanel } from "@/components/admin/dashboard/attention-panel";
+import { UpcomingEvents } from "@/components/admin/dashboard/upcoming-events";
+import { QuickActions } from "@/components/admin/dashboard/quick-actions";
+import { adToBs, BS_MONTH_NAMES_EN } from "@/lib/utils/nepali-calendar";
 import { formatCurrency } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
+/** Greeting and today's date (AD + BS), computed in Nepal time. */
+function getTodayHeader() {
+  const now = new Date();
+  const tz = "Asia/Kathmandu";
+  const hour = Number(new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", hourCycle: "h23" }).format(now));
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const ad = new Intl.DateTimeFormat("en-US", {
+    timeZone: tz,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(now);
+  const [y, m, d] = new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(now).split("-").map(Number);
+  let bs = "";
+  try {
+    const b = adToBs(new Date(y, m - 1, d));
+    bs = `${b.date} ${BS_MONTH_NAMES_EN[b.month]} ${b.year}`;
+  } catch {
+    // Date outside the converter's supported range — show AD only
+  }
+  return { greeting, ad, bs };
+}
+
 export default async function DashboardPage() {
   const stats = await getDashboardStats();
   const eventDates = stats.bookings.map((b) => b.event_date);
+  const { greeting, ad, bs } = getTodayHeader();
+  const urgentCount = stats.attention.filter((a) => a.severity === "high").length;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl sm:text-3xl">Welcome back</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Here&apos;s what&apos;s happening across your events today.
+    <div className="space-y-5 sm:space-y-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="font-display text-2xl sm:text-3xl">{greeting}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {urgentCount > 0
+              ? `${urgentCount} urgent item${urgentCount === 1 ? "" : "s"} need${urgentCount === 1 ? "s" : ""} your attention today.`
+              : "Here's what's happening across your events today."}
+          </p>
+        </div>
+        <p className="text-xs text-muted-foreground sm:text-right">
+          {ad}
+          {bs && <span className="block text-gold-dark">{bs} BS</span>}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <QuickActions />
+
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard
           label="Today's Bookings"
           value={String(stats.todaysBookings)}
@@ -113,13 +153,20 @@ export default async function DashboardPage() {
         />
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+        <AttentionPanel items={stats.attention} />
+        <UpcomingEvents events={stats.upcoming} />
+        <div className="md:col-span-2 xl:col-span-1">
+          <NepaliCalendar eventDates={eventDates} />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 min-w-0">
           <RevenueChart data={stats.revenueByMonth} />
           <EventTypeChart data={stats.bookingsByEventType} />
         </div>
         <div className="space-y-4">
-          <NepaliCalendar eventDates={eventDates} />
           <RecentActivity />
         </div>
       </div>

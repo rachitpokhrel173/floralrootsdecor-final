@@ -74,12 +74,12 @@ export function CustomerReportTab({ data }: { data: CustomerReportData }) {
             <Download className="h-3.5 w-3.5 mr-1.5" /> Export CSV
           </Button>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {data.topCustomers.length === 0 ? (
             <div className="flex h-32 items-center justify-center text-sm text-muted-foreground">No customers yet</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-left text-muted-foreground">
+            <table className="w-full min-w-[480px] text-sm">
+              <thead className="bg-muted/40 text-left text-muted-foreground [&_th]:whitespace-nowrap">
                 <tr>
                   <th className="px-5 py-2.5 font-medium">Name</th>
                   <th className="px-5 py-2.5 font-medium">Phone</th>

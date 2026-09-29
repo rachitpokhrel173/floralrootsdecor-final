@@ -40,6 +40,7 @@ import { QuotationPreviewDialog } from "./quotation-preview-dialog";
 import { useQuotationShareActions } from "./quotation-share-menu";
 import { RecordPaymentDialog } from "@/components/admin/payments/record-payment-dialog";
 import { useQuotations } from "@/hooks/use-quotations";
+import { useQueryFlag } from "@/hooks/use-query-flag";
 import { updateQuotationStatusAction, deleteQuotationAction } from "@/actions/quotation-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { QuotationWithBooking } from "@/lib/data/quotations";
@@ -71,6 +72,7 @@ export function QuotationsTable({
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<QuotationStatus | "all">("all");
   const [builderOpen, setBuilderOpen] = useState(false);
+  useQueryFlag("new", () => setBuilderOpen(true));
   const [editingQuotation, setEditingQuotation] = useState<QuotationWithBooking | null>(null);
   // Store the id, not the row, so the open preview reflects live updates
   // (payments recorded, status changes, link resets) instead of a snapshot.
@@ -136,7 +138,7 @@ export function QuotationsTable({
             />
           </div>
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as QuotationStatus | "all")}>
-            <SelectTrigger className="w-[160px] shrink-0">
+            <SelectTrigger className="w-[132px] sm:w-[160px] shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -159,8 +161,9 @@ export function QuotationsTable({
       </div>
 
       <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-left text-muted-foreground">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[760px] text-sm">
+          <thead className="bg-muted/40 text-left text-muted-foreground [&_th]:whitespace-nowrap">
             <tr>
               <th className="px-4 py-3 font-medium">Number</th>
               <th className="px-4 py-3 font-medium">Client</th>
@@ -293,6 +296,7 @@ export function QuotationsTable({
               ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <QuotationBuilderDialog

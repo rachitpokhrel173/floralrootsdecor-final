@@ -126,7 +126,7 @@ export function VendorFormDialog({
             </Select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Contact Person</Label>
               <Input {...register("contact_person")} />
@@ -137,7 +137,7 @@ export function VendorFormDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Email</Label>
               <Input type="email" {...register("email")} />

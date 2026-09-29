@@ -72,7 +72,7 @@ const columns = [
     id: "tags",
     header: "Tags",
     cell: ({ row }) => (
-      <div className="flex flex-wrap gap-1 max-w-[160px]">
+      <div className="flex flex-wrap gap-1 max-w-[132px] sm:w-[160px]">
         {(row.original.tags ?? []).slice(0, 2).map((t) => (
           <Badge key={t} variant="outline" className="text-[10px]">
             {t}

@@ -25,6 +25,7 @@ import { PaymentReceiptDialog } from "./payment-receipt-dialog";
 import { NewPaymentDialog } from "./new-payment-dialog";
 import { PaymentStatsCards } from "./payment-stats-cards";
 import { usePayments } from "@/hooks/use-payments";
+import { useQueryFlag } from "@/hooks/use-query-flag";
 import { deletePaymentAction } from "@/actions/payment-actions";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { PaymentWithDetails } from "@/lib/data/payments";
@@ -45,6 +46,7 @@ export function PaymentsTable({ companyProfile }: { companyProfile: CompanyProfi
   const [search, setSearch] = useState("");
   const [methodFilter, setMethodFilter] = useState<PaymentMethod | "all">("all");
   const [newPaymentOpen, setNewPaymentOpen] = useState(false);
+  useQueryFlag("new", () => setNewPaymentOpen(true));
   const [receiptPayment, setReceiptPayment] = useState<PaymentWithDetails | null>(null);
   const [, startTransition] = useTransition();
 
@@ -91,7 +93,7 @@ export function PaymentsTable({ companyProfile }: { companyProfile: CompanyProfi
             />
           </div>
           <Select value={methodFilter} onValueChange={(v) => setMethodFilter(v as PaymentMethod | "all")}>
-            <SelectTrigger className="w-[160px] shrink-0">
+            <SelectTrigger className="w-[132px] sm:w-[160px] shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -109,8 +111,9 @@ export function PaymentsTable({ companyProfile }: { companyProfile: CompanyProfi
       </div>
 
       <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-left text-muted-foreground">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[680px] text-sm">
+          <thead className="bg-muted/40 text-left text-muted-foreground [&_th]:whitespace-nowrap">
             <tr>
               <th className="px-4 py-3 font-medium">Date</th>
               <th className="px-4 py-3 font-medium">Client</th>
@@ -190,6 +193,7 @@ export function PaymentsTable({ companyProfile }: { companyProfile: CompanyProfi
               ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <NewPaymentDialog open={newPaymentOpen} onOpenChange={setNewPaymentOpen} onRecorded={refetch} />

@@ -9,6 +9,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import type { EventClickArg, EventDropArg } from "@fullcalendar/core";
 import { toast } from "sonner";
 import { useBookings } from "@/hooks/use-bookings";
+import { useIsMobile } from "@/hooks/use-media-query";
 import { BookingDetailDrawer } from "@/components/admin/bookings/booking-detail-drawer";
 import type { Booking } from "@/types/database.types";
 import "./fullcalendar-overrides.css";
@@ -29,6 +30,7 @@ export function BookingCalendar() {
   const { data: bookings } = useBookings();
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const events = useMemo(
     () =>
@@ -72,13 +74,23 @@ export function BookingCalendar() {
     <>
       <div className="rounded-2xl border border-border bg-card p-3 sm:p-5">
         <FullCalendar
+          // Remount when crossing the breakpoint so the initial view/toolbar switch cleanly
+          key={isMobile ? "mobile" : "desktop"}
           plugins={[dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
-          headerToolbar={{
-            left: "prev,next today",
-            center: "title",
-            right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
-          }}
+          initialView={isMobile ? "listMonth" : "dayGridMonth"}
+          headerToolbar={
+            isMobile
+              ? { left: "prev,next", center: "title", right: "today" }
+              : {
+                  left: "prev,next today",
+                  center: "title",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+                }
+          }
+          footerToolbar={isMobile ? { center: "listMonth,dayGridMonth,timeGridDay" } : undefined}
+          buttonText={{ listMonth: "List", listWeek: "List", dayGridMonth: "Month", timeGridWeek: "Week", timeGridDay: "Day", today: "Today" }}
+          dayMaxEventRows={isMobile ? 2 : false}
+          longPressDelay={300}
           height="auto"
           editable
           eventStartEditable

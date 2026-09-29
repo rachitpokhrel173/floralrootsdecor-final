@@ -19,6 +19,7 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { logoutAction } from "@/actions/auth-actions";
 import { getInitials, formatDate } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
 export function AdminTopbar({ userEmail }: { userEmail?: string }) {
   const { theme, setTheme } = useTheme();
@@ -36,7 +37,10 @@ export function AdminTopbar({ userEmail }: { userEmail?: string }) {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/80 backdrop-blur px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-2 sm:gap-3 border-b border-border bg-background/80 backdrop-blur px-4 sm:px-6">
+      <Link href="/admin/dashboard" className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full md:hidden">
+        <Image src="/logo.png" alt="Floral Roots & Decor" fill sizes="32px" className="object-cover" />
+      </Link>
       <button
         onClick={() => setCommandPaletteOpen(true)}
         className="flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground hover:bg-muted transition-colors w-full max-w-sm"
@@ -49,7 +53,7 @@ export function AdminTopbar({ userEmail }: { userEmail?: string }) {
         </kbd>
       </button>
 
-      <div className="flex items-center gap-2 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         {mounted && (
           <Button
             size="icon"
@@ -73,7 +77,7 @@ export function AdminTopbar({ userEmail }: { userEmail?: string }) {
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
+          <DropdownMenuContent align="end" className="w-[calc(100vw-1.5rem)] max-w-80">
             <DropdownMenuLabel className="flex items-center justify-between">
               Notifications
               {unreadCount > 0 && <Badge variant="luxury">{unreadCount} new</Badge>}

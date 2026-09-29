@@ -26,13 +26,14 @@ export function StatCard({ label, value, icon, trend, accent = "default", delay 
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay }}
+      className="h-full"
     >
-      <Card className="hover:shadow-md transition-shadow">
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs text-muted-foreground font-medium mb-1.5">{label}</p>
-              <p className="font-display text-2xl leading-none">{value}</p>
+      <Card className="h-full hover:shadow-md transition-shadow">
+        <CardContent className="p-3.5 sm:p-5">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-[11px] sm:text-xs text-muted-foreground font-medium mb-1.5 leading-tight">{label}</p>
+              <p className="font-display text-lg sm:text-2xl leading-none whitespace-nowrap">{value}</p>
               {trend && (
                 <p
                   className={cn(
@@ -44,7 +45,7 @@ export function StatCard({ label, value, icon, trend, accent = "default", delay 
                 </p>
               )}
             </div>
-            <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl shrink-0", ACCENT_CLASSES[accent])}>
+            <div className={cn("flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl shrink-0 [&_svg]:h-4 [&_svg]:w-4 sm:[&_svg]:h-5 sm:[&_svg]:w-5", ACCENT_CLASSES[accent])}>
               {icon}
             </div>
           </div>

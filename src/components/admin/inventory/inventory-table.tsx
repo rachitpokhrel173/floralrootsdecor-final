@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { InventoryFormDialog } from "./inventory-form-dialog";
 import { useInventory } from "@/hooks/use-inventory";
+import { useQueryFlag } from "@/hooks/use-query-flag";
 import { deleteInventoryItemAction, adjustStockAction } from "@/actions/inventory-actions";
 import {
   INVENTORY_CATEGORIES,
@@ -31,6 +32,8 @@ export function InventoryTable() {
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [lowStockOnly, setLowStockOnly] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
+  useQueryFlag("lowStock", () => setLowStockOnly(true));
+  useQueryFlag("new", () => openNew());
   const [editingItem, setEditingItem] = useState<InventoryWithSupplier | null>(null);
 
   const filtered = useMemo(() => {
@@ -89,7 +92,7 @@ export function InventoryTable() {
             />
           </div>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-[160px] shrink-0">
+            <SelectTrigger className="w-[132px] sm:w-[160px] shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -115,8 +118,9 @@ export function InventoryTable() {
       </div>
 
       <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted/40 text-left text-muted-foreground">
+        <div className="overflow-x-auto">
+        <table className="w-full min-w-[720px] text-sm">
+          <thead className="bg-muted/40 text-left text-muted-foreground [&_th]:whitespace-nowrap">
             <tr>
               <th className="px-4 py-3 font-medium">Item</th>
               <th className="px-4 py-3 font-medium">Category</th>
@@ -214,6 +218,7 @@ export function InventoryTable() {
               })}
           </tbody>
         </table>
+        </div>
       </div>
 
       <InventoryFormDialog open={formOpen} onOpenChange={setFormOpen} editingItem={editingItem} onSaved={refetch} />

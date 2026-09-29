@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import {
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -95,7 +96,7 @@ function PipelineColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex w-72 shrink-0 flex-col rounded-2xl border border-border bg-muted/30 transition-colors",
+        "flex w-[80vw] max-w-72 shrink-0 snap-start flex-col rounded-2xl border border-border bg-muted/30 transition-colors",
         isOver && "bg-gold/10 border-gold/40"
       )}
     >
@@ -121,7 +122,12 @@ function PipelineColumn({
 export function PipelineBoard() {
   const { data: bookings, isLoading } = useBookings();
   const [activeBooking, setActiveBooking] = useState<Booking | null>(null);
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // Mouse drags start after a small move; on touch, a short press-and-hold starts the drag
+  // so a normal swipe still scrolls the board sideways.
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 220, tolerance: 8 } })
+  );
 
   const grouped = useMemo(() => {
     const map: Record<string, Booking[]> = {};
@@ -156,7 +162,7 @@ export function PipelineBoard() {
 
   if (isLoading) {
     return (
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:gap-4 sm:px-0">
         {COLUMNS.map((c) => (
           <Skeleton key={c.status} className="h-96 w-72 shrink-0 rounded-2xl" />
         ))}
@@ -166,7 +172,7 @@ export function PipelineBoard() {
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-4 sm:mx-0 sm:gap-4 sm:px-0">
         {COLUMNS.map((col) => (
           <PipelineColumn
             key={col.status}

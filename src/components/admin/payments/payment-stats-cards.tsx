@@ -21,7 +21,7 @@ const CARDS: {
 
 export function PaymentStatsCards({ stats, isLoading }: { stats?: PaymentStats; isLoading?: boolean }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       {CARDS.map((card, i) => (
         <motion.div
           key={card.key}
@@ -30,20 +30,20 @@ export function PaymentStatsCards({ stats, isLoading }: { stats?: PaymentStats; 
           transition={{ duration: 0.3, delay: i * 0.03 }}
         >
           <Card>
-            <CardContent className="p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-muted-foreground font-medium mb-1.5">{card.label}</p>
+            <CardContent className="p-3.5 sm:p-5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground font-medium mb-1.5">{card.label}</p>
                   {isLoading ? (
                     <Skeleton className="h-7 w-24" />
                   ) : (
-                    <p className="font-display text-2xl leading-none">
+                    <p className="font-display text-lg sm:text-2xl leading-none whitespace-nowrap">
                       {formatCurrency(stats?.[card.key] ?? 0)}
                     </p>
                   )}
                 </div>
-                <div className={cn("flex h-10 w-10 items-center justify-center rounded-xl shrink-0", card.accent)}>
-                  <card.icon className="h-5 w-5" />
+                <div className={cn("flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl shrink-0", card.accent)}>
+                  <card.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
               </div>
             </CardContent>

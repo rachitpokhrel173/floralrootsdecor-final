@@ -209,9 +209,11 @@ export function StaffDetailDrawer({
             </Avatar>
             <div>
               <SheetTitle>{member.full_name}</SheetTitle>
-              <SheetDescription className="flex items-center gap-2 mt-0.5">
-                <RoleBadge role={member.role} />
-                {!member.is_active && <Badge variant="destructive">Inactive</Badge>}
+              <SheetDescription asChild>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <RoleBadge role={member.role} />
+                  {!member.is_active && <Badge variant="destructive">Inactive</Badge>}
+                </div>
               </SheetDescription>
             </div>
           </div>

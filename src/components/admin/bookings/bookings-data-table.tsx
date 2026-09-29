@@ -107,7 +107,7 @@ export function BookingsDataTable({ columns, data, isLoading, onRowClick }: Book
             className="max-w-sm"
           />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-[132px] sm:w-[160px]">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>

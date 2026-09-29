@@ -32,7 +32,7 @@ export function PaymentReceiptDialog({
           </Button>
         </div>
 
-        <div id="receipt-print-area" className="p-8 space-y-6 bg-white text-black print:p-0">
+        <div id="receipt-print-area" className="p-4 sm:p-8 space-y-6 bg-white text-black print:p-0">
           <div className="text-center space-y-1">
             {companyProfile.logo_url && (
               // eslint-disable-next-line @next/next/no-img-element

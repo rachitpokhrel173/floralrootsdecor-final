@@ -249,13 +249,13 @@ export function QuotationBuilderDialog({
                   <div className="col-span-12 sm:col-span-5">
                     <Input placeholder="Item name" {...register(`items.${index}.name` as const)} />
                   </div>
-                  <div className="col-span-6 sm:col-span-3">
+                  <div className="col-span-12 sm:col-span-3">
                     <Input placeholder="Description" {...register(`items.${index}.description` as const)} />
                   </div>
-                  <div className="col-span-3 sm:col-span-1">
+                  <div className="col-span-4 sm:col-span-1">
                     <Input type="number" min={1} placeholder="Qty" {...register(`items.${index}.qty` as const)} />
                   </div>
-                  <div className="col-span-3 sm:col-span-2">
+                  <div className="col-span-6 sm:col-span-2">
                     <Input
                       type="number"
                       min={0}
@@ -263,7 +263,7 @@ export function QuotationBuilderDialog({
                       {...register(`items.${index}.unit_price` as const)}
                     />
                   </div>
-                  <div className="col-span-12 sm:col-span-1 flex justify-end">
+                  <div className="col-span-2 sm:col-span-1 flex justify-end">
                     <Button
                       type="button"
                       variant="ghost"

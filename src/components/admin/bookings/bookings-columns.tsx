@@ -58,7 +58,7 @@ export const bookingsColumns: ColumnDef<Booking>[] = [
     header: "Client",
     accessorFn: (row) => row.full_name,
     cell: ({ row }) => (
-      <div className="flex items-center gap-2.5 min-w-[160px]">
+      <div className="flex items-center gap-2.5 min-w-[132px] sm:w-[160px]">
         <Avatar className="h-8 w-8">
           <AvatarFallback className="bg-gold/15 text-gold-dark text-[10px]">
             {getInitials(row.original.full_name)}
