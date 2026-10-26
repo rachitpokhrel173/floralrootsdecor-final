@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { QueryProvider } from "@/components/layout/query-provider";
@@ -7,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 const SITE_URL = "https://www.floralrootsdecor.com.np";
+const GA_ID = "G-KF2JWHZEZ2";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -118,6 +120,7 @@ export default function RootLayout({
           </QueryProvider>
         </ThemeProvider>
       </body>
+      {process.env.NODE_ENV === "production" && <GoogleAnalytics gaId={GA_ID} />}
     </html>
   );
 }
